@@ -15,8 +15,8 @@ import { Spinner } from "./StateViews";
  *  `ProfileScreen.tsx`'s `shortenAddress()` for a consistent shortened form
  *  across the app — never used for anything but rendering. */
 function shortenAddress(address: string): string {
-  if (address.length <= 14) return address;
-  return `${address.slice(0, 6)}…${address.slice(-6)}`;
+  if (address.length <= 10) return address;
+  return `${address.slice(0, 4)}…${address.slice(-4)}`;
 }
 
 /** Mirrors `ReferralCard.tsx`'s local `formatTon()` — a stringified nanoton
@@ -147,25 +147,32 @@ export function WalletControl({ className }: { className?: string }) {
             <p className="text-xs font-medium uppercase tracking-wide text-text-faint">
               {t.wallet.balance}
             </p>
-            <p className="mt-1 text-xl font-semibold text-text">
+            <p className="mt-1 flex items-center gap-1.5 text-xl font-semibold text-text">
               {balanceQuery.isPending ? (
                 <Spinner className="h-5 w-5" />
               ) : balanceQuery.data ? (
-                `${formatTon(balanceQuery.data.balanceNano)} TON`
+                <>
+                  <span aria-hidden>💎</span>
+                  {formatTon(balanceQuery.data.balanceNano)}
+                </>
               ) : (
                 "—"
               )}
             </p>
           </div>
 
-          <div className="mt-4 flex flex-col gap-2">
-            <Button variant="secondary" fullWidth onClick={() => void handleCopy()}>
+          <div className="mt-4 flex gap-2">
+            <Button
+              variant="secondary"
+              className="w-1/5 shrink-0 px-0"
+              title={copied ? t.wallet.copied : t.wallet.copyAddress}
+              onClick={() => void handleCopy()}
+            >
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              {copied ? t.wallet.copied : t.wallet.copyAddress}
             </Button>
             <Button
               variant="ghost"
-              fullWidth
+              className="flex-1"
               onClick={handleDisconnect}
               disabled={isBusy}
             >
