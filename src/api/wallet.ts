@@ -26,11 +26,29 @@ export interface WalletProofVerifyPayload {
 }
 
 /** POST /v1/wallet/proof/verify — binds the proven address to the TG
- *  account; response is `MeResponse` with `wallet` filled. */
+ *  account; response is `MeResponse` with `wallet` filled.
+ *
+ *  The server expects `address`/`network`/`publicKey`/`walletStateInit` as
+ *  flat top-level fields (see `wallet-proof/routes.ts`'s `verifyBody`), not
+ *  TonConnect's nested `Account` shape (`{ address, chain, publicKey,
+ *  walletStateInit }`) — flatten here, renaming `chain` -> `network`
+ *  (the server's `mapNetwork()` accepts either the raw CHAIN id or a
+ *  "mainnet"/"testnet" word, so the raw value can be forwarded as-is). */
 export function verifyWalletProof(
   payload: WalletProofVerifyPayload,
 ): Promise<MeResponse> {
-  return postJson("/v1/wallet/proof/verify", payload, meResponseSchema);
+  const { account, proof } = payload;
+  return postJson(
+    "/v1/wallet/proof/verify",
+    {
+      address: account.address,
+      network: account.chain,
+      publicKey: account.publicKey,
+      walletStateInit: account.walletStateInit,
+      proof,
+    },
+    meResponseSchema,
+  );
 }
 
 /** POST /v1/wallet/disconnect — revokes the wallet binding server-side.
