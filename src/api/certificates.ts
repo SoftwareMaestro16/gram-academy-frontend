@@ -2,8 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { postJson, requestJson } from "./http";
 import {
   certificatesMyResponseSchema,
+  certificateStatsSchema,
   mintIntentSchema,
   type CertificateMint,
+  type CertificateStats,
   type MintIntentDto,
 } from "./schemas";
 
@@ -34,8 +36,15 @@ export function fetchCertificatesMy(): Promise<CertificateMint[]> {
   return requestJson("/v1/certificates/my", certificatesMyResponseSchema);
 }
 
+/** GET /v1/certificates/stats — caller's certificate count against the
+ *  platform total, for the Certificates screen's gamification summary. */
+export function fetchCertificateStats(): Promise<CertificateStats> {
+  return requestJson("/v1/certificates/stats", certificateStatsSchema);
+}
+
 export const certificateKeys = {
   my: ["certificates", "my"] as const,
+  stats: ["certificates", "stats"] as const,
 };
 
 /** Polls `GET /v1/certificates/my` every 5s while any record is still
@@ -48,5 +57,12 @@ export function useCertificatesMyQuery() {
     queryFn: fetchCertificatesMy,
     refetchInterval: (query) =>
       query.state.data?.some((c) => c.status === "RESERVED") ? 5000 : false,
+  });
+}
+
+export function useCertificateStatsQuery() {
+  return useQuery({
+    queryKey: certificateKeys.stats,
+    queryFn: fetchCertificateStats,
   });
 }

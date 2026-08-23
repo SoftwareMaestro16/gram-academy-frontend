@@ -10,6 +10,7 @@ import { SectionScreen } from "./features/section/SectionScreen";
 import { CourseScreen } from "./features/course/CourseScreen";
 import { LessonScreen } from "./features/lesson/LessonScreen";
 import { QuizScreen } from "./features/quiz/QuizScreen";
+import { CertificatesScreen } from "./features/certificates/CertificatesScreen";
 import { ProfileScreen } from "./features/profile/ProfileScreen";
 import { useAuthTelegramMutation } from "./api/queries";
 import { useAppStore, type AppView } from "./state/useAppStore";
@@ -73,6 +74,8 @@ function renderView(view: AppView) {
       );
     case "quiz":
       return <QuizScreen courseSlug={view.courseSlug} quizId={view.quizId} />;
+    case "certificates":
+      return <CertificatesScreen />;
     case "profile":
       return <ProfileScreen />;
   }
@@ -84,7 +87,8 @@ function AppShell() {
   const goBack = useAppStore((s) => s.goBack);
 
   useEffect(() => {
-    const isRoot = view.name === "home" || view.name === "profile";
+    const isRoot =
+      view.name === "home" || view.name === "certificates" || view.name === "profile";
     if (isRoot) {
       hideBackButton();
     } else {

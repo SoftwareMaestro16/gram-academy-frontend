@@ -11,10 +11,11 @@ export type AppView =
   | { name: "course"; slug: string }
   | { name: "lesson"; courseSlug: string; lessonId: string }
   | { name: "quiz"; courseSlug: string; quizId: string }
+  | { name: "certificates" }
   | { name: "profile" };
 
 /** Root tabs shown in the bottom tab bar. */
-export type RootTab = "home" | "profile";
+export type RootTab = "home" | "certificates" | "profile";
 
 interface AppState {
   view: AppView;
@@ -50,7 +51,12 @@ export const useAppStore = create<AppState>()(
       replaceView: (view) => set({ view }),
       setTab: (tab) =>
         set(() => ({
-          view: tab === "home" ? { name: "home" } : { name: "profile" },
+          view:
+            tab === "home"
+              ? { name: "home" }
+              : tab === "certificates"
+                ? { name: "certificates" }
+                : { name: "profile" },
           history: [],
         })),
       goBack: () => {

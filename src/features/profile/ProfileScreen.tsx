@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Award, Moon, Star, Sun, Wallet } from "lucide-react";
+import { Award, ChevronRight, Moon, Star, Sun, Wallet } from "lucide-react";
 import { Screen } from "../../components/Screen";
 import { Card } from "../../components/Card";
 import { Badge } from "../../components/Badge";
@@ -42,26 +42,6 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
       <span className="text-sm font-medium text-text-muted">{label}</span>
       {children}
     </div>
-  );
-}
-
-function PlaceholderCard({
-  icon,
-  title,
-  hint,
-}: {
-  icon: ReactNode;
-  title: string;
-  hint: string;
-}) {
-  return (
-    <Card>
-      <div className="flex items-center gap-2 font-medium">
-        <span className="text-text-muted">{icon}</span>
-        {title}
-      </div>
-      <p className="mt-1 text-sm text-text-muted">{hint}</p>
-    </Card>
   );
 }
 
@@ -143,10 +123,32 @@ function WalletCard({ wallet }: { wallet: MeResponse["wallet"] }) {
   );
 }
 
+/** Links out to the dedicated Certificates tab (replaces the old dead-end
+ *  "Finish a course to earn one" placeholder now that it has a real
+ *  destination). */
+function CertificatesLinkCard({ onOpen }: { onOpen: () => void }) {
+  const { t } = useT();
+  return (
+    <Card onClick={onOpen}>
+      <div className="flex items-center gap-3">
+        <span className="text-text-muted">
+          <Award className="h-4 w-4" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="font-medium">{t.profile.certificates}</p>
+          <p className="mt-0.5 text-sm text-text-muted">{t.profile.certificatesHint}</p>
+        </div>
+        <ChevronRight className="h-4 w-4 shrink-0 text-text-faint" />
+      </div>
+    </Card>
+  );
+}
+
 export function ProfileScreen() {
   const { t, locale } = useT();
   const setLocale = useAppStore((s) => s.setLocale);
   const setThemeOverride = useAppStore((s) => s.setThemeOverride);
+  const setTab = useAppStore((s) => s.setTab);
   const theme = useEffectiveTheme();
   const { data: me, isPending, isError, refetch } = useMe();
   const updateLocale = useUpdateLocaleMutation();
@@ -233,11 +235,7 @@ export function ProfileScreen() {
       <section className="mt-4 space-y-3 xs:mt-6">
         <WalletCard wallet={me.wallet} />
         <ReferralCard hasWallet={me.wallet !== null} />
-        <PlaceholderCard
-          icon={<Award className="h-4 w-4" />}
-          title={t.profile.certificates}
-          hint={t.profile.certificatesSoon}
-        />
+        <CertificatesLinkCard onOpen={() => setTab("certificates")} />
       </section>
     </Screen>
   );

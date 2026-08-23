@@ -24,6 +24,7 @@ import { requestPurchaseInvoice } from "../../api/payments";
 import { contentKeys, useCourseQuery, useMe } from "../../api/queries";
 import { ApiError } from "../../api/http";
 import { buildMintTransaction } from "../../lib/mintTx";
+import { useWalletProof } from "../../lib/useWalletProof";
 import { impactHaptic, notificationHaptic, openTelegramInvoice } from "../../lib/telegram";
 import { useAppStore, type AppView } from "../../state/useAppStore";
 import type { CertificateMint, CourseDetail, MintIntentDto, Wallet } from "../../api/schemas";
@@ -78,11 +79,12 @@ function MintFlow({
   wallet: Wallet | null | undefined;
   onGoToProfile: () => void;
 }) {
-  const { t } = useT();
+  const { t, c } = useT();
   const locale = useAppStore((s) => s.locale);
   const queryClient = useQueryClient();
   const [tonConnectUI] = useTonConnectUI();
   const { data: myCertificates } = useCertificatesMyQuery();
+  const { connect: connectWallet, isBusy: isWalletConnecting } = useWalletProof();
   const [phase, setPhase] = useState<MintPhase>({ name: "idle" });
 
   // Rows for THIS course, keyed by the `<course-slug>-<serial>` tokenName
@@ -210,11 +212,16 @@ function MintFlow({
   if (wallet === null) {
     return (
       <div>
-        <Button variant="secondary" fullWidth disabled>
-          <Award className="h-4 w-4" />
-          {t.course.getCertificate}
+        <p className="mb-2 text-center text-xs text-text-muted">{t.mint.walletRequired}</p>
+        <Button
+          variant="primary"
+          fullWidth
+          disabled={isWalletConnecting}
+          onClick={() => void connectWallet()}
+        >
+          {isWalletConnecting ? <Spinner className="h-4 w-4" /> : <Award className="h-4 w-4" />}
+          {c.wallet.connect}
         </Button>
-        <p className="mt-2 text-center text-xs text-text-muted">{t.mint.walletRequired}</p>
         <Button variant="ghost" fullWidth className="mt-1" onClick={onGoToProfile}>
           {t.mint.goToProfile}
         </Button>

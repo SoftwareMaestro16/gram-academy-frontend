@@ -1,4 +1,4 @@
-import { House, User } from "lucide-react";
+import { Award, House, User } from "lucide-react";
 import { cn } from "../lib/cn";
 import { useT } from "../i18n/useT";
 import { useAppStore, type AppView, type RootTab } from "../state/useAppStore";
@@ -8,7 +8,9 @@ import { ThemeToggle } from "./ThemeToggle";
 
 /** Maps any view to the root tab it belongs under. */
 function tabForView(view: AppView): RootTab {
-  return view.name === "profile" ? "profile" : "home";
+  if (view.name === "profile") return "profile";
+  if (view.name === "certificates") return "certificates";
+  return "home";
 }
 
 /**
@@ -22,13 +24,14 @@ function tabForView(view: AppView): RootTab {
  * sticky bar (the bottom TabBar hides itself at that width instead).
  */
 export function Header() {
-  const { c } = useT();
+  const { c, t } = useT();
   const view = useAppStore((s) => s.view);
   const setTab = useAppStore((s) => s.setTab);
   const active = tabForView(view);
 
   const tabs: { id: RootTab; label: string; Icon: typeof House }[] = [
     { id: "home", label: c.nav.home, Icon: House },
+    { id: "certificates", label: t.profile.certificates, Icon: Award },
     { id: "profile", label: c.nav.profile, Icon: User },
   ];
 

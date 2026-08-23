@@ -82,10 +82,20 @@ export interface ScreenMessages {
     wallet: string;
     referral: string;
     certificates: string;
-    certificatesSoon: string;
+    certificatesHint: string;
     premium: string;
     discountReminder: string;
     builtOn: string;
+  };
+  certificates: {
+    title: string;
+    subtitle: string;
+    earned: string;
+    topPercent: string;
+    firstOne: string;
+    unlocked: string;
+    inProgress: string;
+    locked: string;
   };
   wallet: {
     connecting: string;
@@ -211,10 +221,20 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       wallet: "Wallet",
       referral: "Invite friends",
       certificates: "My certificates",
-      certificatesSoon: "Finish a course to earn one",
+      certificatesHint: "See everything you've earned and unlocked",
       premium: "Premium",
       discountReminder: "You have -15% on paid courses",
       builtOn: "Built on",
+    },
+    certificates: {
+      title: "Certificates",
+      subtitle: "Everything you've earned, and what's still locked",
+      earned: "Certificates earned",
+      topPercent: "You're in the top {n}% of learners",
+      firstOne: "Earn your first certificate to see how you rank",
+      unlocked: "Unlocked",
+      inProgress: "Pending",
+      locked: "Locked",
     },
     wallet: {
       connecting: "Connecting…",
@@ -341,10 +361,20 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       wallet: "Кошелёк",
       referral: "Приглашай друзей",
       certificates: "Мои сертификаты",
-      certificatesSoon: "Пройди курс, чтобы получить",
+      certificatesHint: "Все полученные и ещё не открытые сертификаты",
       premium: "Premium",
       discountReminder: "У тебя -15% на платные курсы",
       builtOn: "Built on",
+    },
+    certificates: {
+      title: "Сертификаты",
+      subtitle: "Всё, что ты уже получил, и что ещё предстоит открыть",
+      earned: "Сертификатов получено",
+      topPercent: "Ты в топ-{n}% учащихся",
+      firstOne: "Получи первый сертификат, чтобы узнать свой рейтинг",
+      unlocked: "Получен",
+      inProgress: "В обработке",
+      locked: "Заблокирован",
     },
     wallet: {
       connecting: "Подключение…",
@@ -469,10 +499,20 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       wallet: "钱包",
       referral: "邀请好友",
       certificates: "我的证书",
-      certificatesSoon: "完成课程即可获得",
+      certificatesHint: "查看已获得和待解锁的所有证书",
       premium: "Premium",
       discountReminder: "付费课程可享 -15%",
       builtOn: "Built on",
+    },
+    certificates: {
+      title: "证书",
+      subtitle: "已获得的证书，以及尚待解锁的证书",
+      earned: "已获得证书",
+      topPercent: "你已超过 {n}% 的学员",
+      firstOne: "获得第一张证书即可查看你的排名",
+      unlocked: "已解锁",
+      inProgress: "确认中",
+      locked: "未解锁",
     },
     wallet: {
       connecting: "连接中…",

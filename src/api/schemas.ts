@@ -270,6 +270,17 @@ export type CertificateMint = z.infer<typeof certificateMintSchema>;
 
 export const certificatesMyResponseSchema = z.array(certificateMintSchema);
 
+/** GET /v1/certificates/stats — gamification stat for the Certificates
+ *  screen. `percentile` means "the caller has as many-or-more CONFIRMED
+ *  certificates than `percentile`% of all users" — higher is better; render
+ *  as "top N%" via `100 - percentile`. */
+export const certificateStatsSchema = z.object({
+  myCount: z.number(),
+  totalUsers: z.number(),
+  percentile: z.number(),
+});
+export type CertificateStats = z.infer<typeof certificateStatsSchema>;
+
 // --- Stars purchase (master-spec §13.5) -------------------------------------
 
 /** POST /v1/courses/:slug/purchase-invoice -> `{ invoiceLink }`, opened via
