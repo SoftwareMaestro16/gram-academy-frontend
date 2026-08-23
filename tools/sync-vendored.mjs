@@ -10,8 +10,8 @@ import { cp, rm, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 
-const contractsRepo = process.argv[2] ? resolve(process.argv[2]) : resolve(process.cwd(), "../gram-academy-contracts");
-const backendRepo = process.argv[3] ? resolve(process.argv[3]) : resolve(process.cwd(), "../gram-academy-backend");
+const contractsRepo = process.argv[2] ? resolve(process.argv[2]) : resolve(process.cwd(), "../contracts");
+const backendRepo = process.argv[3] ? resolve(process.argv[3]) : resolve(process.cwd(), "../server");
 
 const jobs = [
   {
