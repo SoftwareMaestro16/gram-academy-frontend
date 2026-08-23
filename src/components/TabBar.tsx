@@ -43,8 +43,11 @@ export function TabBar() {
        *  it, so the bar and the notch-safe inset (behind a device home indicator) are the same
        *  narrow shape — not a full-width strip under a narrower pill. Safe here (unlike Header's
        *  own padding-vs-height fix) because nothing on this element fixes a total height that the
-       *  padding could squeeze; each button sizes itself via `min-h-11`. */}
-      <div className="safe-bottom content-col rounded-t-2xl border-t border-border bg-surface/95 backdrop-blur">
+       *  padding could squeeze; each button sizes itself via `min-h-11`. At sm: and up it also gets
+       *  a bottom margin + full border + bottom rounding, matching Header's fully-rounded floating
+       *  card at the same breakpoint (mobile stays flush against the bottom edge). */}
+      <div className="safe-bottom content-col rounded-t-2xl border-t border-border bg-surface/95 backdrop-blur sm:mb-3 sm:rounded-b-2xl sm:border">
+
         <div className="flex">
           {tabs.map(({ id, label, Icon }) => (
             <button
