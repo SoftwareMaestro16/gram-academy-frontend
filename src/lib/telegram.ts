@@ -28,6 +28,10 @@ interface TelegramWebApp {
     user?: { language_code?: string };
   };
   version: string;
+  // "tdesktop" | "macos" | "ios" | "android" | "android_x" | "web" | "webk" | "weba" |
+  // "unigram" | "unknown" — the two desktop clients are the only ones whose own fullscreen
+  // controls don't overlap page content the way mobile's floating pill does (prepareTelegramViewport).
+  platform: string;
   colorScheme: "light" | "dark";
   ready: () => void;
   expand: () => void;
@@ -134,10 +138,16 @@ export function enableClosingConfirmation(): void {
   }
 }
 
+// Telegram Desktop / macOS render their own fullscreen close/menu controls without floating them
+// over the top of the page the way mobile clients do — reserving extra space for them there is
+// just a dead gap (real user feedback: "убрать safearea на компе, на телефоне/планшетах оставить").
+const DESKTOP_PLATFORMS = new Set(["tdesktop", "macos"]);
+
 /**
  * Synchronous boot: ready + expand, and request fullscreen on Telegram ≥ 8.0.
  * The `data-tg-fullscreen-requested` attribute reserves space under Telegram's
  * controls immediately via CSS (styles/app.css) — call before first paint.
+ * Only set on non-desktop platforms; see DESKTOP_PLATFORMS above.
  */
 export function prepareTelegramViewport(): void {
   const webApp = getTelegramWebApp();
@@ -147,7 +157,7 @@ export function prepareTelegramViewport(): void {
     webApp.expand();
     if (webApp.isVersionAtLeast("8.0") && webApp.requestFullscreen) {
       webApp.requestFullscreen();
-      if (typeof document !== "undefined") {
+      if (typeof document !== "undefined" && !DESKTOP_PLATFORMS.has(webApp.platform)) {
         document.documentElement.setAttribute("data-tg-fullscreen-requested", "true");
       }
     }
