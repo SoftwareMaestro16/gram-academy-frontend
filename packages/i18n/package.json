@@ -1,0 +1,12 @@
+{
+  "name": "@gram-academy/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "VENDORED build of @gram-academy/i18n — source of truth is gram-academy-backend. Do not edit dist/ by hand; re-sync with tools/sync-vendored.mjs.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+  }
+}

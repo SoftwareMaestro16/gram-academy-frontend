@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+*.tsbuildinfo
+
+# vendored package builds (re-synced from source repos, not committed)
+packages/protocol/dist/
+packages/i18n/dist/
+
+# env / secrets — only public VITE_* values live here, but never commit the real file
+.env
+.env.*
+!.env.example
+
+# local https certs
+.certs/
+
+# editor / OS
+.DS_Store

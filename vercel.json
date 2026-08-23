@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://gramacademy-185-163-47-190.sslip.io/:path*"
+    }
+  ]
+}
