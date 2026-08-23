@@ -64,16 +64,17 @@ export type WalletProofChallenge = z.infer<typeof walletProofChallengeSchema>;
 //
 // `referralLink` is null until a wallet is connected (server-computed).
 // `earnedTonNano` arrives as a stringified bigint (nanoton) per the wire
-// convention — formatted to TON client-side, never computed.
+// convention — formatted to TON client-side, never computed. Matches
+// server/api/src/modules/referrals/service.ts's `ReferralStats` exactly —
+// it does not compute a `referralCode` or `conversionPct` (neither is
+// rendered anywhere in this app), so this schema must not require them.
 
 export const referralsSchema = z.object({
-  referralCode: z.string(),
   referralLink: z.string().nullable(),
   invitedCount: z.number(),
   referralsWithWallet: z.number(),
   mintedByReferrals: z.number(),
   earnedTonNano: z.string(),
-  conversionPct: z.number(),
 });
 export type Referrals = z.infer<typeof referralsSchema>;
 
