@@ -1,8 +1,170 @@
-import { resolveLocale, appMessages } from "@gram-academy/i18n";
+import { useEffect, useMemo, useRef } from "react";
+import { Send } from "lucide-react";
+import { Button } from "./components/Button";
+import { ErrorCard, Spinner } from "./components/StateViews";
+import { TabBar } from "./components/TabBar";
+import { HomeScreen } from "./features/home/HomeScreen";
+import { SectionScreen } from "./features/section/SectionScreen";
+import { CourseScreen } from "./features/course/CourseScreen";
+import { LessonScreen } from "./features/lesson/LessonScreen";
+import { QuizScreen } from "./features/quiz/QuizScreen";
+import { ProfileScreen } from "./features/profile/ProfileScreen";
+import { useAuthTelegramMutation } from "./api/queries";
+import { useAppStore, type AppView } from "./state/useAppStore";
+import { useT } from "./i18n/useT";
+import {
+  getTelegramInitData,
+  hideBackButton,
+  onTelegramThemeChanged,
+  showBackButton,
+} from "./lib/telegram";
+import { setupTelegramSdk } from "./lib/tmaSdk";
+import { applyTheme, resolveTheme } from "./lib/theme";
 
-// Placeholder shell — verifies the vendored @gram-academy/i18n resolves.
-// Track C replaces this with the auth-gate + Zustand view-stack navigation.
+function FullScreenLoader() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <Spinner className="h-8 w-8" />
+    </div>
+  );
+}
+
+/** Shown when the app is opened outside Telegram (no initData). */
+function OutsideTelegram() {
+  const { t } = useT();
+  const publicUrl =
+    typeof import.meta.env.VITE_TMA_PUBLIC_URL === "string"
+      ? import.meta.env.VITE_TMA_PUBLIC_URL
+      : "";
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-8 text-center">
+      <Send className="h-12 w-12 text-accent" />
+      <h1 className="text-xl font-bold">{t.outside.title}</h1>
+      <p className="text-text-muted">{t.outside.body}</p>
+      {publicUrl ? (
+        <a href={publicUrl} target="_blank" rel="noreferrer">
+          <Button variant="primary" size="lg">
+            {t.outside.button}
+          </Button>
+        </a>
+      ) : (
+        <Button variant="primary" size="lg" disabled>
+          {t.outside.button}
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function renderView(view: AppView) {
+  switch (view.name) {
+    case "home":
+      return <HomeScreen />;
+    case "section":
+      return <SectionScreen sectionSlug={view.sectionSlug} />;
+    case "course":
+      return <CourseScreen slug={view.slug} />;
+    case "lesson":
+      return (
+        <LessonScreen courseSlug={view.courseSlug} lessonId={view.lessonId} />
+      );
+    case "quiz":
+      return <QuizScreen courseSlug={view.courseSlug} quizId={view.quizId} />;
+    case "profile":
+      return <ProfileScreen />;
+  }
+}
+
+/** The authenticated app: view router + Telegram BackButton + tab bar. */
+function AppShell() {
+  const view = useAppStore((s) => s.view);
+  const goBack = useAppStore((s) => s.goBack);
+
+  useEffect(() => {
+    const isRoot = view.name === "home" || view.name === "profile";
+    if (isRoot) {
+      hideBackButton();
+    } else {
+      showBackButton(goBack);
+    }
+  }, [view, goBack]);
+
+  const hideTabBar = view.name === "lesson" || view.name === "quiz";
+
+  return (
+    <div className="flex min-h-full flex-col">
+      <div className="flex-1">{renderView(view)}</div>
+      {!hideTabBar && <TabBar />}
+    </div>
+  );
+}
+
+/** Runs initData auth once, then renders the app (or loading/error). */
+function AuthGate({ initData }: { initData: string }) {
+  const auth = useAuthTelegramMutation();
+  const setLocale = useAppStore((s) => s.setLocale);
+  const setView = useAppStore((s) => s.setView);
+  const started = useRef(false);
+  const didNavigate = useRef(false);
+
+  const authenticate = () => {
+    auth.mutate(initData, {
+      onSuccess: (me) => {
+        setLocale(me.user.locale);
+        if (me.deepLinkCourseSlug && !didNavigate.current) {
+          didNavigate.current = true;
+          setView({ name: "course", slug: me.deepLinkCourseSlug });
+        }
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (!started.current) {
+      started.current = true;
+      authenticate();
+    }
+    void setupTelegramSdk();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (auth.isSuccess) return <AppShell />;
+  if (auth.isError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-6">
+        <div className="w-full max-w-sm">
+          <ErrorCard
+            onRetry={() => {
+              auth.reset();
+              authenticate();
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+  return <FullScreenLoader />;
+}
+
 export function App() {
-  const locale = resolveLocale(navigator.language);
-  return <main>{appMessages[locale].common.loading}</main>;
+  const themeOverride = useAppStore((s) => s.themeOverride);
+
+  // Keep <html data-theme> in sync with the manual override…
+  useEffect(() => {
+    applyTheme(resolveTheme(themeOverride));
+  }, [themeOverride]);
+
+  // …and follow Telegram's theme when there is no manual override.
+  useEffect(
+    () =>
+      onTelegramThemeChanged(() =>
+        applyTheme(resolveTheme(useAppStore.getState().themeOverride)),
+      ),
+    [],
+  );
+
+  const initData = useMemo(() => getTelegramInitData(), []);
+  if (!initData) return <OutsideTelegram />;
+  return <AuthGate initData={initData} />;
 }
