@@ -60,7 +60,7 @@ export function Screen({
           // clearance below can't be clobbered by a responsive pt/pb pair
           // fighting over the padding-bottom axis.
           "flex-1 px-3 pt-3 xs:px-4 xs:pt-4",
-          withTabBar ? "pb-24 sm:pb-8" : "pb-3 xs:pb-4",
+          withTabBar ? "pb-24" : "pb-3 xs:pb-4",
         )}
       >
         {children}

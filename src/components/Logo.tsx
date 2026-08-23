@@ -18,17 +18,12 @@ export function Logo({ className }: { className?: string }) {
   );
 }
 
-/** Bare Gram diamond mark (no wordmark) — white on dark, black on light,
- *  same source images as `Logo`. Used as a small inline currency icon next
- *  to a TON amount (e.g. the referral card's earnings stat) instead of
- *  spelling out "TON" as text. */
+/** The official Gram Diamond Mark (TON Brand Assets pack, ton.org/media —
+ *  assets/README.md), fixed brand-blue + white, never recolored per theme.
+ *  Used as a small inline currency icon next to a TON amount (e.g. the
+ *  referral card's earnings stat) instead of spelling out "TON" as text. */
 export function GramMark({ className }: { className?: string }) {
-  return (
-    <span className={cn("inline-flex items-center", className)} aria-hidden>
-      <img src="/academy_black.png" alt="" className="theme-light-only h-full w-auto" />
-      <img src="/academy_white.png" alt="" className="theme-dark-only h-full w-auto" />
-    </span>
-  );
+  return <img src="/gram-diamond.svg" alt="" aria-hidden className={cn("h-full w-auto", className)} />;
 }
 
 /** "Built on TON" attribution — the official TON logo, never recolored

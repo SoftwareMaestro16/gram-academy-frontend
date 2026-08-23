@@ -1,80 +1,27 @@
-import { Award, House, User } from "lucide-react";
-import { cn } from "../lib/cn";
-import { useT } from "../i18n/useT";
-import { useAppStore, type AppView, type RootTab } from "../state/useAppStore";
-import { selectionHaptic } from "../lib/telegram";
 import { Logo } from "./Logo";
 import { WalletControl } from "./WalletControl";
-
-/** Maps any view to the root tab it belongs under. */
-function tabForView(view: AppView): RootTab {
-  if (view.name === "profile") return "profile";
-  if (view.name === "certificates") return "certificates";
-  return "home";
-}
 
 /**
  * The site Header — a real, persistent top bar rendered once by `AppShell`
  * for every screen (including lesson/quiz, unlike the old TabBar-embedded
- * top nav it replaces), not duplicated per-screen.
- *
- * <600px: minimal — logo + wordmark + wallet control only. Primary nav stays
- * in the bottom TabBar so it isn't shown twice.
- * ≥600px: logo + wordmark + primary nav (Home/Profile) + wallet control, as
- * a slim sticky bar (the bottom TabBar hides itself at that width instead).
+ * top nav it replaces), not duplicated per-screen. Just the brand mark and
+ * the wallet control — primary navigation lives entirely in `TabBar` (now
+ * shown at every breakpoint, not just <600px), so this stays a single slim
+ * row that never gets crowded regardless of viewport width.
  *
  * The theme toggle that used to live here was removed — it's still reachable
  * from Profile's language/theme card, so nothing is lost.
  */
 export function Header() {
-  const { c, t } = useT();
-  const view = useAppStore((s) => s.view);
-  const setTab = useAppStore((s) => s.setTab);
-  const active = tabForView(view);
-
-  const tabs: { id: RootTab; label: string; Icon: typeof House }[] = [
-    { id: "home", label: c.nav.home, Icon: House },
-    { id: "certificates", label: t.profile.certificates, Icon: Award },
-    { id: "profile", label: c.nav.profile, Icon: User },
-  ];
-
-  const onSelect = (id: RootTab) => {
-    if (active !== id) selectionHaptic();
-    setTab(id);
-  };
-
   return (
     <header className="safe-top sticky top-0 z-30 rounded-b-2xl bg-surface/95 shadow-[0_1px_0_0_var(--border),0_4px_16px_-8px_rgba(0,0,0,0.25)] backdrop-blur">
-      <div className="content-col flex h-12 items-center gap-3 px-3 xs:px-4 sm:gap-6 md:px-6 lg:px-8">
+      <div className="content-col flex h-12 items-center gap-3 px-3 xs:px-4 md:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-2">
           <Logo className="shrink-0" />
           <span className="truncate text-sm font-semibold text-text sm:text-base">
             Gram Academy
           </span>
         </div>
-
-        {/* ≥600px only: primary nav lives here instead of the bottom tab bar. */}
-        <nav
-          className="hidden items-center gap-1 sm:flex"
-          aria-label="Primary"
-        >
-          {tabs.map(({ id, label, Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => onSelect(id)}
-              className={cn(
-                "flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-medium transition-colors duration-150",
-                active === id
-                  ? "bg-accent-soft text-accent"
-                  : "text-text-muted hover:bg-surface-2 hover:text-text",
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              {label}
-            </button>
-          ))}
-        </nav>
 
         <WalletControl className="ml-auto shrink-0" />
       </div>

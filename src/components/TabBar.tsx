@@ -12,11 +12,11 @@ function tabForView(view: AppView): RootTab {
 }
 
 /**
- * Root Home/Profile nav for narrow layouts (<600px — bottom bars read as
- * native app chrome there). At ≥600px the same Home/Profile nav lives in the
- * persistent `Header` instead (bottom bars read as mobile-only chrome in a
- * desktop browser tab — DESIGN.md §Responsive breakpoints), so this renders
- * nothing there rather than duplicating it.
+ * Root Home/Certificates/Profile nav — the only place primary navigation
+ * lives, at every breakpoint (the `Header` holds just the brand mark and the
+ * wallet control, so it never gets crowded on wide screens). The inner row
+ * shares `content-col` with the rest of the app, so on wide viewports this
+ * reads as a centered bar rather than full-bleed buttons.
  */
 export function TabBar() {
   const { c, t } = useT();
@@ -38,7 +38,7 @@ export function TabBar() {
   return (
     <nav
       aria-label="Primary"
-      className="safe-bottom fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface/95 backdrop-blur sm:hidden"
+      className="safe-bottom fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface/95 backdrop-blur"
     >
       <div className="content-col flex">
         {tabs.map(({ id, label, Icon }) => (

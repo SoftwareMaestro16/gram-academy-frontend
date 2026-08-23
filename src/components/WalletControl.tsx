@@ -9,6 +9,7 @@ import { impactHaptic } from "../lib/telegram";
 import { Card } from "./Card";
 import { Button } from "./Button";
 import { Badge } from "./Badge";
+import { GramMark } from "./Logo";
 import { Spinner } from "./StateViews";
 
 /** `UQAb…9f3Y`-style shortened display, mirrored from
@@ -152,8 +153,8 @@ export function WalletControl({ className }: { className?: string }) {
                 <Spinner className="h-5 w-5" />
               ) : balanceQuery.data ? (
                 <>
-                  <span aria-hidden>💎</span>
                   {formatTon(balanceQuery.data.balanceNano)}
+                  <GramMark className="h-4" />
                 </>
               ) : (
                 "—"
@@ -171,7 +172,7 @@ export function WalletControl({ className }: { className?: string }) {
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             </Button>
             <Button
-              variant="ghost"
+              variant="secondary"
               className="flex-1"
               onClick={handleDisconnect}
               disabled={isBusy}

@@ -17,9 +17,9 @@ import { cn } from "../lib/cn";
  * side holds the locale indicator. The copyright credit line sits centered
  * beneath that whole row.
  *
- * `withTabBar` mirrors `Screen`'s own prop — when the mobile bottom TabBar
- * can be showing (i.e. not on lesson/quiz), the footer reserves the same
- * bottom clearance so it never sits underneath it.
+ * `withTabBar` mirrors `Screen`'s own prop — when the bottom TabBar (visible
+ * at every breakpoint) can be showing (i.e. not on lesson/quiz), the footer
+ * reserves the same bottom clearance so it never sits underneath it.
  */
 export function Footer({ withTabBar }: { withTabBar?: boolean }) {
   const { t, locale } = useT();
@@ -27,10 +27,7 @@ export function Footer({ withTabBar }: { withTabBar?: boolean }) {
 
   return (
     <footer
-      className={cn(
-        "content-col mt-10 px-3 pt-6 xs:px-4",
-        withTabBar ? "pb-24 sm:pb-8" : "pb-6",
-      )}
+      className={cn("content-col mt-10 px-3 pt-6 xs:px-4", withTabBar ? "pb-24" : "pb-6")}
     >
       <div className="border-t border-border pt-4">
         <div className="flex items-start justify-between gap-4">
