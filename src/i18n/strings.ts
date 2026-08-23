@@ -133,7 +133,7 @@ export interface ScreenMessages {
   };
   outside: { title: string; body: string; button: string };
   error: { generic: string };
-  footer: { builtOn: string; credit: string; channel: string };
+  footer: { builtOn: string; credit: string };
   /** Certificate mint flow (Course screen — docs/05-frontend-spec.md §4.2). */
   mint: {
     walletRequired: string;
@@ -288,7 +288,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       button: "Open the bot",
     },
     error: { generic: "Something went wrong." },
-    footer: { builtOn: "Built on", credit: "© {year} Gram Academy", channel: "News channel" },
+    footer: { builtOn: "Built on", credit: "© {year} Gram Academy" },
     mint: {
       walletRequired: "Connect a wallet in your profile to mint this certificate.",
       goToProfile: "Go to Profile",
@@ -440,7 +440,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       button: "Открыть бота",
     },
     error: { generic: "Что-то пошло не так." },
-    footer: { builtOn: "Собрано на", credit: "© {year} Gram Academy", channel: "Новости в Telegram" },
+    footer: { builtOn: "Built on", credit: "© {year} Gram Academy" },
     mint: {
       walletRequired: "Подключите кошелёк в профиле, чтобы получить сертификат.",
       goToProfile: "В профиль",
@@ -589,7 +589,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       button: "打开机器人",
     },
     error: { generic: "出错了。" },
-    footer: { builtOn: "基于", credit: "© {year} Gram Academy", channel: "Telegram 频道" },
+    footer: { builtOn: "Built on", credit: "© {year} Gram Academy" },
     mint: {
       walletRequired: "请在个人中心连接钱包以领取证书。",
       goToProfile: "前往个人中心",

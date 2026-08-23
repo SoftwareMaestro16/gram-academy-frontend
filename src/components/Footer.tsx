@@ -40,7 +40,7 @@ export function Footer({ withTabBar }: { withTabBar?: boolean }) {
             rel="noreferrer"
             className="shrink-0 text-xs font-medium text-accent hover:underline"
           >
-            {t.footer.channel} · @GramAcademyNews
+            @GramAcademyNews
           </a>
         </div>
         <p className="mt-4 text-center text-xs text-text-faint">
