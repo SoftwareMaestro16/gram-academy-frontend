@@ -5,9 +5,10 @@ node_modules/
 dist/
 *.tsbuildinfo
 
-# vendored package builds (re-synced from source repos, not committed)
-packages/protocol/dist/
-packages/i18n/dist/
+# vendored package builds — COMMITTED, not gitignored: Vercel clones only this repo (no
+# access to sibling ../contracts, ../server), so a prebuilt dist/ must ship in git or the
+# build can't resolve @gram-academy/{protocol,i18n}. Re-run `npm run sync:vendored` and
+# commit the diff after any change to the contracts SDK or the backend i18n package.
 
 # env / secrets — only public VITE_* values live here, but never commit the real file
 .env

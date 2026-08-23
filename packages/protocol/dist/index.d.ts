@@ -1,0 +1,25 @@
+export declare const MINT_PRICE = 150000000n;
+export declare const CERT_ITEM_VALUE = 40000000n;
+export declare const REFERRAL_REWARD = 50000000n;
+export declare const COLLECTION_MIN_STORAGE = 50000000n;
+export declare const MAX_TOKEN_NAME_BYTES = 32;
+export declare const Opcodes: {
+    readonly topUp: 0;
+    readonly askToDeployItem: 1178019995;
+    readonly certificateDeploy: 1195459396;
+    readonly withdrawCollectionBalance: 1464029004;
+    readonly collectionRevenueWithdrawn: 1129464919;
+    readonly referralPayout: 1380271696;
+    readonly transfer: 1607220500;
+    readonly getStaticData: 801842850;
+    readonly reportStaticData: 2339837749;
+    readonly proveOwnership: 81711432;
+    readonly ownershipProof: 86296494;
+    readonly requestOwner: 3502489578;
+    readonly ownerInfo: 232130531;
+    readonly excesses: 3576854235;
+};
+export declare function buildTokenName(slug: string, serial: number): string;
+export * from "./wrappers/AcademyCollection.gen.js";
+export { AcademyCertificate, AcademyCertificateStorage, CertificateConfig, CertificateStorageNotInitialized, NftDataReply, Transfer, GetStaticData, ReportStaticData, ProveOwnership, OwnershipProof, RequestOwner, OwnerInfo, Excesses, } from "./wrappers/AcademyCertificate.gen.js";
+export * from "./chain/index.js";
