@@ -29,10 +29,10 @@ export function Screen({
   return (
     <div className="content-col flex min-h-full w-full flex-col">
       {(title || onBack || action) && (
-        // top-11 clears the persistent site Header (Header.tsx, h-11), which
+        // top-14 clears the persistent site Header (Header.tsx: min-h-11 + py-1.5 = 56px), which
         // now renders at every breakpoint — both are `sticky top:*` siblings
         // stacking in DOM order.
-        <header className="sticky top-11 z-10 border-b border-border bg-bg/90 backdrop-blur">
+        <header className="sticky top-14 z-10 border-b border-border bg-bg/90 backdrop-blur">
           <div className="flex h-14 items-center gap-2 px-3 xs:px-4">
             {onBack && (
               <button

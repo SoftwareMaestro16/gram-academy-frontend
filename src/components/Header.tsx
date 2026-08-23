@@ -21,7 +21,7 @@ export function Header() {
        *  here — padding-top plus a height on the same box would fight each other under
        *  box-sizing:border-box (the row could get squeezed to nothing on a tall safe-area inset). */}
       <div className="safe-top content-col rounded-b-2xl bg-surface/95 shadow-[0_1px_0_0_var(--border),0_4px_16px_-8px_rgba(0,0,0,0.25)] backdrop-blur">
-        <div className="flex h-11 items-center gap-3 px-3 xs:px-4 md:px-6 lg:px-8">
+        <div className="flex min-h-11 items-center gap-3 px-3 py-1.5 xs:px-4 md:px-6 lg:px-8">
           <div className="flex min-w-0 items-center gap-2">
             <Logo className="shrink-0" />
             <span className="truncate text-base font-semibold text-text sm:text-lg">
