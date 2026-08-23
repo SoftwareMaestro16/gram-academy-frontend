@@ -20,7 +20,7 @@ function ReferralInfoButton() {
         type="button"
         aria-label={t.referral.infoTitle}
         onClick={() => setOpen(true)}
-        className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-border text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text"
+        className="ml-auto flex h-[25px] w-[25px] shrink-0 items-center justify-center rounded-md border border-border text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text"
       >
         <Info className="h-3.5 w-3.5" />
       </button>

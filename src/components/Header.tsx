@@ -14,8 +14,11 @@ import { WalletControl } from "./WalletControl";
  */
 export function Header() {
   return (
-    <header className="safe-top sticky top-0 z-30 rounded-b-2xl bg-surface/95 shadow-[0_1px_0_0_var(--border),0_4px_16px_-8px_rgba(0,0,0,0.25)] backdrop-blur">
-      <div className="content-col flex h-12 items-center gap-3 px-3 xs:px-4 md:px-6 lg:px-8">
+    <header className="safe-top sticky top-0 z-30">
+      {/* The bar itself (background/rounding/shadow) is content-col-width, not full-bleed — on a
+       *  wide viewport it reads as a floating pill matching the page content's own max-width,
+       *  instead of a full-width band with the content awkwardly clustered inside it. */}
+      <div className="content-col flex h-11 items-center gap-3 rounded-b-2xl bg-surface/95 px-3 shadow-[0_1px_0_0_var(--border),0_4px_16px_-8px_rgba(0,0,0,0.25)] backdrop-blur xs:px-4 md:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-2">
           <Logo className="shrink-0" />
           <span className="truncate text-base font-semibold text-text sm:text-lg">

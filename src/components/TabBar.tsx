@@ -14,9 +14,11 @@ function tabForView(view: AppView): RootTab {
 /**
  * Root Home/Certificates/Profile nav — the only place primary navigation
  * lives, at every breakpoint (the `Header` holds just the brand mark and the
- * wallet control, so it never gets crowded on wide screens). The inner row
- * shares `content-col` with the rest of the app, so on wide viewports this
- * reads as a centered bar rather than full-bleed buttons.
+ * wallet control, so it never gets crowded on wide screens). The outer `nav`
+ * is only a full-width positioning helper (`fixed inset-x-0 bottom-0`); the
+ * actual visible bar (background/border/blur) lives on the inner
+ * `content-col` div, so on a wide viewport this reads as a centered floating
+ * bar matching the page content's own max-width instead of a full-bleed one.
  */
 export function TabBar() {
   const { c, t } = useT();
@@ -36,11 +38,8 @@ export function TabBar() {
   };
 
   return (
-    <nav
-      aria-label="Primary"
-      className="safe-bottom fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface/95 backdrop-blur"
-    >
-      <div className="content-col flex">
+    <nav aria-label="Primary" className="safe-bottom fixed inset-x-0 bottom-0 z-20">
+      <div className="content-col flex rounded-t-2xl border-t border-border bg-surface/95 backdrop-blur">
         {tabs.map(({ id, label, Icon }) => (
           <button
             key={id}
