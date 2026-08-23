@@ -6,7 +6,8 @@ import {
 } from "@tanstack/react-query";
 import { useAppStore } from "../state/useAppStore";
 import { authTelegram, fetchMe, updateLocale } from "./auth";
-import { completeLesson, fetchCourse, fetchSections, submitQuiz } from "./courses";
+import { completeLesson, fetchCourse, fetchSections } from "./courses";
+import { answerQuizQuestion, startQuizAttempt, violateQuizAttempt } from "./quiz";
 import type { Locale, MeResponse } from "./schemas";
 
 // --- Query keys ------------------------------------------------------------
@@ -101,15 +102,57 @@ export function useCompleteLessonMutation() {
   });
 }
 
-export function useSubmitQuizMutation() {
+// --- Quiz attempt flow (QUIZ-INTEGRITY.md) ----------------------------------
+
+/** POST /v1/quizzes/:id/start — no course/sections invalidation: starting an
+ *  attempt doesn't change any persisted state, only cache-level session state. */
+export function useStartQuizMutation() {
+  return useMutation({
+    mutationFn: (quizId: string) => startQuizAttempt(quizId),
+  });
+}
+
+/** POST /v1/quizzes/:id/attempts/:attemptId/answer — invalidate course +
+ *  sections only once the attempt finalizes (`done: true`), since that's the
+ *  only point progress/certificate-eligibility can change. */
+export function useAnswerQuizMutation() {
   const queryClient = useQueryClient();
   const locale = useAppStore((s) => s.locale);
   return useMutation({
     mutationFn: (vars: {
       quizId: string;
+      attemptId: string;
+      questionIndex: number;
+      selectedOption: number;
       courseSlug: string;
-      answers: number[];
-    }) => submitQuiz(vars.quizId, vars.answers),
+    }) =>
+      answerQuizQuestion(
+        vars.quizId,
+        vars.attemptId,
+        vars.questionIndex,
+        vars.selectedOption,
+      ),
+    onSuccess: (data, vars) => {
+      if (data.done) {
+        void queryClient.invalidateQueries({
+          queryKey: contentKeys.course(vars.courseSlug, locale),
+        });
+        void queryClient.invalidateQueries({
+          queryKey: contentKeys.sections(locale),
+        });
+      }
+    },
+  });
+}
+
+/** POST /v1/quizzes/:id/attempts/:attemptId/violate — always finalizes as
+ *  failed, so always invalidate (mirrors the answer mutation's finalize path). */
+export function useViolateQuizMutation() {
+  const queryClient = useQueryClient();
+  const locale = useAppStore((s) => s.locale);
+  return useMutation({
+    mutationFn: (vars: { quizId: string; attemptId: string; courseSlug: string }) =>
+      violateQuizAttempt(vars.quizId, vars.attemptId),
     onSuccess: (_data, vars) => {
       void queryClient.invalidateQueries({
         queryKey: contentKeys.course(vars.courseSlug, locale),

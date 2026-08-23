@@ -57,3 +57,47 @@ export async function setupTelegramSdk(): Promise<void> {
     /* SDK failed to load or init — the app still works via telegram.ts */
   }
 }
+
+interface SignalLike<T> {
+  (): T;
+  sub: (fn: (current: T, previous: T) => void) => () => void;
+}
+
+interface TmaVisibilityLike {
+  isTMA?: () => boolean;
+  miniApp?: { isActive?: SignalLike<boolean> };
+}
+
+/**
+ * Subscribes to the Telegram Mini App's own activity signal
+ * (`miniApp.isActive`, backed by the bridge's `visibility_changed` event) —
+ * flips to `false` the moment the user switches away from the Mini App
+ * (QUIZ-INTEGRITY.md — used to fail an active quiz attempt). No-ops (returns
+ * a noop unsubscribe) outside Telegram or if unsupported.
+ *
+ * Independent of `setupTelegramSdk`'s own mount attempt: the dynamic import
+ * is cached by the module loader, so this resolves near-instantly once the
+ * SDK has been loaded once, and works even if that earlier mount failed.
+ */
+export async function subscribeToTelegramInactive(
+  onInactive: () => void,
+): Promise<() => void> {
+  try {
+    const mod = (await import("@tma.js/sdk-react")) as unknown as TmaVisibilityLike;
+
+    if (typeof mod.isTMA === "function" && mod.isTMA() !== true) {
+      return () => undefined;
+    }
+
+    const isActive = mod.miniApp?.isActive;
+    if (!isActive || typeof isActive.sub !== "function") {
+      return () => undefined;
+    }
+
+    return isActive.sub((current) => {
+      if (!current) onInactive();
+    });
+  } catch {
+    return () => undefined;
+  }
+}

@@ -13,12 +13,20 @@ import {
 import { TonConnectUIProvider, THEME, type Locales } from "@tonconnect/ui-react";
 import { App } from "./App";
 import { handleAuthError } from "./api/reauth";
-import { getTelegramLocale, prepareTelegramViewport } from "./lib/telegram";
+import {
+  enableClosingConfirmation,
+  getTelegramLocale,
+  prepareTelegramViewport,
+} from "./lib/telegram";
 import { useAppStore } from "./state/useAppStore";
 import { applyTheme, resolveTheme } from "./lib/theme";
 
 // Reserve fullscreen space + ready/expand before first paint.
 prepareTelegramViewport();
+
+// Global "are you sure?" on swipe-to-close — unconditional, not quiz-specific
+// (QUIZ-INTEGRITY.md §Client requirements).
+enableClosingConfirmation();
 
 // Apply the resolved theme synchronously (before render) to avoid a flash;
 // the store is already hydrated from localStorage at this point.

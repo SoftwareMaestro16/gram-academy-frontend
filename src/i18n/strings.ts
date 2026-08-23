@@ -56,6 +56,25 @@ export interface ScreenMessages {
     retry: string;
     continue: string;
     selectAnswer: string;
+    // Pre-quiz rules screen (QUIZ-INTEGRITY.md)
+    rulesHeading: string;
+    ruleTimer: string;
+    ruleShuffle: string;
+    ruleNoLeave: string;
+    ruleNoCopy: string;
+    ruleThreshold: string;
+    ruleCooldown: string;
+    start: string;
+    // Per-question countdown
+    timeLeft: string;
+    timeUp: string;
+    // Cooldown gating on the rules screen
+    cooldownHeading: string;
+    cooldownAvailableAt: string;
+    cooldownIn: string;
+    // Failure screen (same copy for fail/timeout/violation)
+    failedBody: string;
+    retryCountdown: string;
   };
   profile: {
     title: string;
@@ -126,6 +145,22 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       retry: "Try again",
       continue: "Continue",
       selectAnswer: "Pick an answer to continue",
+      rulesHeading: "Before you start",
+      ruleTimer: "30 seconds per question",
+      ruleShuffle: "Questions and answers are shuffled every attempt",
+      ruleNoLeave: "Leaving or switching apps fails the attempt immediately",
+      ruleNoCopy: "Don't try to copy the questions or answers",
+      ruleThreshold: "You need at least {min} out of {total} correct answers to pass",
+      ruleCooldown: "If you don't pass, you can try again in about an hour",
+      start: "Start quiz",
+      timeLeft: "{s}s",
+      timeUp: "Time's up",
+      cooldownHeading: "On cooldown",
+      cooldownAvailableAt: "You can try again at {time}",
+      cooldownIn: "in {duration}",
+      failedBody:
+        "Unfortunately you didn't get enough correct answers to pass this quiz. Try again in about an hour.",
+      retryCountdown: "Available again in {duration}",
     },
     profile: {
       title: "Profile",
@@ -198,6 +233,23 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       retry: "Попробовать ещё раз",
       continue: "Продолжить",
       selectAnswer: "Выбери ответ, чтобы продолжить",
+      rulesHeading: "Перед началом",
+      ruleTimer: "30 секунд на каждый вопрос",
+      ruleShuffle: "Вопросы и варианты перемешиваются при каждой попытке",
+      ruleNoLeave:
+        "Выход из приложения или переключение на другое сразу проваливает попытку",
+      ruleNoCopy: "Не пытайся копировать текст вопросов и ответов",
+      ruleThreshold: "Чтобы сдать, нужно минимум {min} правильных ответов из {total}",
+      ruleCooldown: "Если не сдашь, следующая попытка будет доступна примерно через час",
+      start: "Начать тест",
+      timeLeft: "{s} с",
+      timeUp: "Время вышло",
+      cooldownHeading: "Временная блокировка",
+      cooldownAvailableAt: "Сможешь попробовать снова в {time}",
+      cooldownIn: "через {duration}",
+      failedBody:
+        "К сожалению, правильных ответов не хватило, чтобы сдать тест. Попробуй снова примерно через час.",
+      retryCountdown: "Снова доступно через {duration}",
     },
     profile: {
       title: "Профиль",
@@ -270,6 +322,21 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       retry: "再试一次",
       continue: "继续",
       selectAnswer: "请选择一个答案",
+      rulesHeading: "开始之前",
+      ruleTimer: "每题限时 30 秒",
+      ruleShuffle: "每次尝试题目和选项顺序都会打乱",
+      ruleNoLeave: "退出或切换到其他应用会立即导致本次尝试失败",
+      ruleNoCopy: "请勿尝试复制题目或答案文本",
+      ruleThreshold: "至少需要答对 {total} 题中的 {min} 题才能通过",
+      ruleCooldown: "如果未通过，大约一小时后可再次尝试",
+      start: "开始测验",
+      timeLeft: "{s} 秒",
+      timeUp: "时间到",
+      cooldownHeading: "冷却中",
+      cooldownAvailableAt: "可在 {time} 再次尝试",
+      cooldownIn: "{duration} 后",
+      failedBody: "很遗憾，正确答案数量不足，未能通过测验。请大约一小时后重试。",
+      retryCountdown: "{duration} 后可重试",
     },
     profile: {
       title: "个人中心",

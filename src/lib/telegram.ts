@@ -40,6 +40,8 @@ interface TelegramWebApp {
   HapticFeedback: TelegramHaptics;
   onEvent?: (event: string, handler: () => void) => void;
   offEvent?: (event: string, handler: () => void) => void;
+  enableClosingConfirmation?: () => void;
+  disableClosingConfirmation?: () => void;
   // Wave 2 (declared, not called yet):
   openInvoice?: (url: string, cb: (status: string) => void) => void;
   switchInlineQuery?: (query: string, chatTypes?: string[]) => void;
@@ -116,6 +118,19 @@ export function onTelegramThemeChanged(handler: () => void): () => void {
   if (!webApp?.onEvent) return () => undefined;
   webApp.onEvent("themeChanged", handler);
   return () => webApp.offEvent?.("themeChanged", handler);
+}
+
+/**
+ * Prompts "Are you sure?" on an accidental swipe-to-close (Bot API 6.2+).
+ * Called once at startup, unconditionally — not quiz-specific
+ * (QUIZ-INTEGRITY.md §Client requirements). No-ops outside Telegram.
+ */
+export function enableClosingConfirmation(): void {
+  try {
+    getTelegramWebApp()?.enableClosingConfirmation?.();
+  } catch {
+    /* not in Telegram / unsupported — ignore */
+  }
 }
 
 /**

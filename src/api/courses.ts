@@ -2,12 +2,10 @@ import { postJson, requestJson } from "./http";
 import {
   courseDetailSchema,
   lessonCompleteSchema,
-  quizSubmitSchema,
   sectionsResponseSchema,
   type CourseDetail,
   type LessonComplete,
   type Locale,
-  type QuizSubmitResult,
   type Section,
 } from "./schemas";
 
@@ -30,17 +28,5 @@ export function completeLesson(lessonId: string): Promise<LessonComplete> {
     `/v1/lessons/${encodeURIComponent(lessonId)}/complete`,
     undefined,
     lessonCompleteSchema,
-  );
-}
-
-/** POST /v1/quizzes/:id/submit — grade answers, returns `{ passed, score }`. */
-export function submitQuiz(
-  quizId: string,
-  answers: number[],
-): Promise<QuizSubmitResult> {
-  return postJson(
-    `/v1/quizzes/${encodeURIComponent(quizId)}/submit`,
-    { answers },
-    quizSubmitSchema,
   );
 }

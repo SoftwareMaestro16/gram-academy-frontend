@@ -210,6 +210,15 @@ body {
   color: var(--text-muted);
 }
 
+/* No-copy deterrent for an active quiz attempt only (QUIZ-INTEGRITY.md) —
+   never applied to lessons, which stay copyable. Paired with a JS guard
+   (useNoCopyGuard) that blocks copy/cut/contextmenu/selectstart. */
+.no-copy,
+.no-copy * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* Motion: subtle only, and honor reduced-motion (DESIGN.md §Motion). */
 @media (prefers-reduced-motion: reduce) {
   *,

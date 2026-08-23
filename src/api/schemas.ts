@@ -121,6 +121,10 @@ export const quizDetailSchema = z.object({
   completed: z.boolean(),
   passed: z.boolean(),
   questions: z.array(quizQuestionSchema),
+  // QUIZ-INTEGRITY.md: ISO timestamp of the 1h cooldown from the latest
+  // failed attempt, or null when not in cooldown. Lets the client show
+  // "available at HH:MM" without a failed /start round-trip.
+  cooldownUntil: z.string().nullable(),
 });
 export type QuizDetail = z.infer<typeof quizDetailSchema>;
 
@@ -149,9 +153,48 @@ export type CourseDetail = z.infer<typeof courseDetailSchema>;
 export const lessonCompleteSchema = z.object({ ok: z.boolean() });
 export type LessonComplete = z.infer<typeof lessonCompleteSchema>;
 
-/** POST /v1/quizzes/:id/submit → `{ passed, score }`. */
-export const quizSubmitSchema = z.object({
-  passed: z.boolean(),
-  score: z.number(),
+// --- Quiz attempts (QUIZ-INTEGRITY.md) --------------------------------------
+//
+// Replaces the old `POST /v1/quizzes/:id/submit { answers } -> { passed, score }`
+// (removed). Questions are revealed one at a time by the server, each starting
+// its own 30s clock server-side at the moment it's sent. Grading, timing,
+// shuffling, and cooldown are entirely server-authoritative — the client never
+// sees `correctIndex` and never decides pass/fail itself.
+
+export const quizQuestionRevealSchema = z.object({
+  index: z.number(),
+  id: z.string(),
+  question: z.string(),
+  options: z.array(z.string()),
 });
-export type QuizSubmitResult = z.infer<typeof quizSubmitSchema>;
+export type QuizQuestionReveal = z.infer<typeof quizQuestionRevealSchema>;
+
+/** POST /v1/quizzes/:id/start */
+export const quizStartResponseSchema = z.object({
+  attemptId: z.string(),
+  totalQuestions: z.number(),
+  questionTimeLimitSeconds: z.number(),
+  question: quizQuestionRevealSchema,
+});
+export type QuizStartResponse = z.infer<typeof quizStartResponseSchema>;
+
+/** POST /v1/quizzes/:id/attempts/:attemptId/answer `{ questionIndex, selectedOption }` */
+export const quizAnswerResponseSchema = z.discriminatedUnion("done", [
+  z.object({ done: z.literal(false), question: quizQuestionRevealSchema }),
+  z.object({
+    done: z.literal(true),
+    passed: z.boolean(),
+    score: z.number(),
+    retryAfterSeconds: z.number().nullable(),
+  }),
+]);
+export type QuizAnswerResponse = z.infer<typeof quizAnswerResponseSchema>;
+
+/** POST /v1/quizzes/:id/attempts/:attemptId/violate `{ reason: "backgrounded" }`.
+ *  Finalizes the attempt immediately as failed — same effect as a timeout. */
+export const quizViolateResponseSchema = z.object({
+  passed: z.literal(false),
+  score: z.number(),
+  retryAfterSeconds: z.number(),
+});
+export type QuizViolateResponse = z.infer<typeof quizViolateResponseSchema>;
