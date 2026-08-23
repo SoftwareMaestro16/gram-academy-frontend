@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Circle, CircleCheck } from "lucide-react";
 import { cn } from "../lib/cn";
 import { Badge } from "./Badge";
@@ -28,18 +29,37 @@ function Row({
   onClick: () => void;
   trailing?: React.ReactNode;
 }) {
+  // Pop the checkmark in with a brief scale animation the moment this row
+  // flips incomplete -> complete (e.g. after finishing the lesson it
+  // represents), instead of on every render where it's already done.
+  const wasDone = useRef(done);
+  const [justCompleted, setJustCompleted] = useState(false);
+  useEffect(() => {
+    const flippedToDone = !wasDone.current && done;
+    wasDone.current = done;
+    if (!flippedToDone) return;
+    setJustCompleted(true);
+    const timer = window.setTimeout(() => setJustCompleted(false), 500);
+    return () => window.clearTimeout(timer);
+  }, [done]);
+
   return (
     <button
       type="button"
       onClick={onClick}
       aria-current={current ? "step" : undefined}
       className={cn(
-        "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors duration-150",
+        "flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors duration-150",
         current ? "bg-surface-2" : "hover:bg-surface-2",
       )}
     >
       {done ? (
-        <CircleCheck className="h-5 w-5 shrink-0 text-success" />
+        <CircleCheck
+          className={cn(
+            "h-5 w-5 shrink-0 text-success",
+            justCompleted && "check-pop",
+          )}
+        />
       ) : (
         <Circle
           className={cn(

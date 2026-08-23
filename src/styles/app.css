@@ -26,6 +26,16 @@
 @theme {
   --font-sans: "Google Sans Flex", -apple-system, "Segoe UI", Roboto, sans-serif;
 
+  /* Responsive breakpoints (DESIGN.md §Responsive breakpoints) — replace
+     Tailwind's defaults so sm:/md:/lg: line up with the design tiers exactly:
+     unprefixed = small phone ≤360px, xs: = standard phone 361-599px,
+     sm: = large-phone/tablet 600-959px, md: = tablet/small-laptop 960-1279px,
+     lg: = desktop ≥1280px. */
+  --breakpoint-xs: 361px;
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 960px;
+  --breakpoint-lg: 1280px;
+
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
@@ -141,6 +151,31 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* Centered content column that grows by breakpoint instead of stretching
+   edge-to-edge on larger screens (DESIGN.md §Responsive breakpoints). Below
+   600px it's full-width (the baseline mobile layout); from 600px up it caps
+   and centers, with generous outer margins showing the --bg token, not a
+   blank edge. */
+.content-col {
+  margin-inline: auto;
+  width: 100%;
+}
+@media (min-width: 600px) {
+  .content-col {
+    max-width: 640px;
+  }
+}
+@media (min-width: 960px) {
+  .content-col {
+    max-width: 760px;
+  }
+}
+@media (min-width: 1280px) {
+  .content-col {
+    max-width: 880px;
+  }
+}
+
 /* Reading typography for lesson markdown (DESIGN.md §Typography, §Lesson). */
 .reading {
   max-width: 66ch;
@@ -217,6 +252,27 @@ body {
 .no-copy * {
   -webkit-user-select: none;
   user-select: none;
+}
+
+/* Success "pop" micro-animation for checkmarks (lesson-complete confirmation,
+   a roadmap item flipping incomplete -> complete). Brief and subtle — the
+   reduced-motion override below collapses its duration to ~0. */
+@keyframes check-pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.check-pop {
+  animation: check-pop 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Motion: subtle only, and honor reduced-motion (DESIGN.md §Motion). */

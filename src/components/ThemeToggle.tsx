@@ -20,7 +20,7 @@ export function ThemeToggle({ className }: { className?: string }) {
         setThemeOverride(theme === "dark" ? "light" : "dark");
       }}
       className={cn(
-        "inline-flex h-10 w-10 items-center justify-center rounded-full text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text",
+        "inline-flex h-11 w-11 items-center justify-center rounded-full text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text",
         className,
       )}
     >

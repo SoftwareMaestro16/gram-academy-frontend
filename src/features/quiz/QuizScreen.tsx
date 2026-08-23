@@ -351,6 +351,7 @@ export function QuizScreen({
             // Network failure mid-violate — the server will still time the
             // attempt out on its own; reflect the same outcome locally so
             // the user isn't stuck.
+            notificationHaptic("error");
             setPhase({ name: "result", passed: false, score: 0, retryAfterSeconds: 3600 });
           },
         },
@@ -436,6 +437,7 @@ export function QuizScreen({
           }
         },
         onError: () => {
+          notificationHaptic("error");
           setPhase({ name: "result", passed: false, score: 0, retryAfterSeconds: 3600 });
         },
       },

@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef } from "react";
 import { Send } from "lucide-react";
 import { Button } from "./components/Button";
 import { ErrorCard, Spinner } from "./components/StateViews";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
 import { TabBar } from "./components/TabBar";
 import { HomeScreen } from "./features/home/HomeScreen";
 import { SectionScreen } from "./features/section/SectionScreen";
@@ -32,9 +34,9 @@ function FullScreenLoader() {
 /** Shown when the app is opened outside Telegram (no initData). */
 function OutsideTelegram() {
   const { t } = useT();
-  const publicUrl =
-    typeof import.meta.env.VITE_TMA_PUBLIC_URL === "string"
-      ? import.meta.env.VITE_TMA_PUBLIC_URL
+  const botLink =
+    typeof import.meta.env.VITE_TELEGRAM_BOT_DEEPLINK === "string"
+      ? import.meta.env.VITE_TELEGRAM_BOT_DEEPLINK
       : "";
 
   return (
@@ -42,8 +44,8 @@ function OutsideTelegram() {
       <Send className="h-12 w-12 text-accent" />
       <h1 className="text-xl font-bold">{t.outside.title}</h1>
       <p className="text-text-muted">{t.outside.body}</p>
-      {publicUrl ? (
-        <a href={publicUrl} target="_blank" rel="noreferrer">
+      {botLink ? (
+        <a href={botLink} target="_blank" rel="noreferrer">
           <Button variant="primary" size="lg">
             {t.outside.button}
           </Button>
@@ -90,12 +92,22 @@ function AppShell() {
     }
   }, [view, goBack]);
 
-  const hideTabBar = view.name === "lesson" || view.name === "quiz";
+  // The mobile bottom TabBar (and the bottom clearance Footer reserves for
+  // it) stays hidden during lesson/quiz for a distraction-free reading/quiz
+  // surface — unchanged from before. The Header, however, is now genuinely
+  // persistent: it renders on every screen at every breakpoint.
+  const hideBottomTabBar = view.name === "lesson" || view.name === "quiz";
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="flex-1">{renderView(view)}</div>
-      {!hideTabBar && <TabBar />}
+      {/* Header is `sticky`, so it needs to be first in DOM/flow order to pin
+       *  correctly as the page scrolls. */}
+      <Header />
+      <div className="flex flex-1 flex-col">{renderView(view)}</div>
+      <Footer withTabBar={!hideBottomTabBar} />
+      {/* TabBar's bottom bar is `fixed`, so its DOM position is independent
+       *  of the flow above — safe to render last. */}
+      {!hideBottomTabBar && <TabBar />}
     </div>
   );
 }

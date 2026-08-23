@@ -26,7 +26,7 @@ export function SectionScreen({ sectionSlug }: { sectionSlug: string }) {
       ) : !section || section.courses.length === 0 ? (
         <EmptyState title={t.section.empty} />
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {section.courses.map((course) => (
             <CourseCard
               key={course.slug}

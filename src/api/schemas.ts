@@ -48,6 +48,35 @@ export const meResponseSchema = z.object({
 });
 export type MeResponse = z.infer<typeof meResponseSchema>;
 
+// --- Wallet ton-proof (§13.5: POST /v1/wallet/proof/challenge) -------------
+//
+// `verify`'s response reuses `meResponseSchema` (it returns MeResponse with
+// `wallet` filled). `disconnect`'s response shape isn't pinned by the spec —
+// callers refetch `me` afterwards instead of relying on its body.
+
+export const walletProofChallengeSchema = z.object({
+  payload: z.string(),
+  expiresAt: z.string(),
+});
+export type WalletProofChallenge = z.infer<typeof walletProofChallengeSchema>;
+
+// --- Referrals (docs/08 §6: GET /v1/referrals/my) ---------------------------
+//
+// `referralLink` is null until a wallet is connected (server-computed).
+// `earnedTonNano` arrives as a stringified bigint (nanoton) per the wire
+// convention — formatted to TON client-side, never computed.
+
+export const referralsSchema = z.object({
+  referralCode: z.string(),
+  referralLink: z.string().nullable(),
+  invitedCount: z.number(),
+  referralsWithWallet: z.number(),
+  mintedByReferrals: z.number(),
+  earnedTonNano: z.string(),
+  conversionPct: z.number(),
+});
+export type Referrals = z.infer<typeof referralsSchema>;
+
 // --- Certificate status ----------------------------------------------------
 
 export const certificateStatusSchema = z.enum(["none", "reserved", "minted"]);
@@ -198,3 +227,55 @@ export const quizViolateResponseSchema = z.object({
   retryAfterSeconds: z.number(),
 });
 export type QuizViolateResponse = z.infer<typeof quizViolateResponseSchema>;
+
+// --- Certificate mint (master-spec §13.5/§13.6) -----------------------------
+//
+// POST /v1/certificates/mint-intent -> MintIntentDto. The client relays this
+// as-is to TON Connect (`lib/mintTx.ts`) — it never inspects or recomputes
+// `payloadBase64`/`amountNano`. Idempotent while a non-expired RESERVED
+// record exists for the course (same serial/signature returned on repeat
+// calls); errors: 403 course_not_completed, 409 already_minted,
+// 409 wallet_required.
+
+export const mintIntentSchema = z.object({
+  collectionAddress: z.string(),
+  itemAddress: z.string(),
+  tokenName: z.string(),
+  serial: z.number(),
+  amountNano: z.string(),
+  payloadBase64: z.string(),
+  validUntil: z.number(),
+});
+export type MintIntentDto = z.infer<typeof mintIntentSchema>;
+
+/** GET /v1/certificates/my — one row per reservation/mint on the caller's
+ *  account, across all courses. `status` is the on-chain-confirmation state
+ *  machine (distinct from `CourseDetail.certificate`, which only summarizes
+ *  the single course being viewed). The client polls this until the row
+ *  matching a fresh mint's `tokenName` reaches CONFIRMED. */
+export const certificateMintStatusSchema = z.enum(["RESERVED", "CONFIRMED", "EXPIRED"]);
+export type CertificateMintStatus = z.infer<typeof certificateMintStatusSchema>;
+
+export const certificateMintSchema = z.object({
+  id: z.string(),
+  courseId: z.string(),
+  serial: z.number(),
+  tokenName: z.string(),
+  status: certificateMintStatusSchema,
+  itemAddress: z.string(),
+  confirmedAt: z.string().nullable(),
+  createdAt: z.string(),
+});
+export type CertificateMint = z.infer<typeof certificateMintSchema>;
+
+export const certificatesMyResponseSchema = z.array(certificateMintSchema);
+
+// --- Stars purchase (master-spec §13.5) -------------------------------------
+
+/** POST /v1/courses/:slug/purchase-invoice -> `{ invoiceLink }`, opened via
+ *  `Telegram.WebApp.openInvoice`. Errors: 409 already_purchased,
+ *  400 course_not_paid. */
+export const purchaseInvoiceResponseSchema = z.object({
+  invoiceLink: z.string(),
+});
+export type PurchaseInvoiceResponse = z.infer<typeof purchaseInvoiceResponseSchema>;

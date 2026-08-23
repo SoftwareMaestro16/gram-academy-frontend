@@ -3,8 +3,7 @@ import { resolveLocale, type Locale } from "@gram-academy/i18n";
 /**
  * Minimal hand-typed view of `window.Telegram.WebApp` — only the surface the
  * Mini App uses. The full runtime is injected by the `telegram-web-app.js`
- * script (index.html). Wave 2 members (openInvoice/switchInlineQuery) are
- * declared but not yet called.
+ * script (index.html).
  */
 type HapticStyle = "light" | "medium" | "heavy" | "rigid" | "soft";
 type HapticNotification = "error" | "success" | "warning";
@@ -42,10 +41,12 @@ interface TelegramWebApp {
   offEvent?: (event: string, handler: () => void) => void;
   enableClosingConfirmation?: () => void;
   disableClosingConfirmation?: () => void;
-  // Wave 2 (declared, not called yet):
-  openInvoice?: (url: string, cb: (status: string) => void) => void;
+  openInvoice?: (url: string, cb: (status: InvoiceStatus) => void) => void;
   switchInlineQuery?: (query: string, chatTypes?: string[]) => void;
 }
+
+/** Statuses `openInvoice`'s callback can report (Bot API `invoiceClosed`). */
+export type InvoiceStatus = "paid" | "cancelled" | "failed" | "pending";
 
 interface TelegramGlobal {
   Telegram?: { WebApp?: TelegramWebApp };
@@ -201,5 +202,50 @@ export function notificationHaptic(type: HapticNotification): void {
     getTelegramWebApp()?.HapticFeedback.notificationOccurred(type);
   } catch {
     /* ignore */
+  }
+}
+
+// --- Stars invoice -----------------------------------------------------------
+
+/**
+ * Opens a Telegram Stars invoice (`invoiceLink` from
+ * `POST /v1/courses/:slug/purchase-invoice`, docs/05-frontend-spec.md §5).
+ * `onClosed` receives the final status once the user closes the invoice
+ * sheet. Outside Telegram / on an unsupported client version, reports
+ * `"failed"` synchronously so callers don't hang waiting for a callback that
+ * will never fire.
+ */
+export function openTelegramInvoice(
+  invoiceLink: string,
+  onClosed: (status: InvoiceStatus) => void,
+): void {
+  const webApp = getTelegramWebApp();
+  if (!webApp?.openInvoice) {
+    onClosed("failed");
+    return;
+  }
+  try {
+    webApp.openInvoice(invoiceLink, onClosed);
+  } catch {
+    onClosed("failed");
+  }
+}
+
+// --- Inline share ------------------------------------------------------------
+
+/**
+ * Opens Telegram's inline-share compose box pre-filled with `query` (the
+ * bot renders the matching inline card — docs/05-frontend-spec.md §6).
+ * Returns `true` if the call was made, `false` when unsupported/outside
+ * Telegram so callers can fall back (Web Share API, then plain copy).
+ */
+export function switchInlineQuery(query: string, chatTypes?: string[]): boolean {
+  const webApp = getTelegramWebApp();
+  if (!webApp?.switchInlineQuery) return false;
+  try {
+    webApp.switchInlineQuery(query, chatTypes);
+    return true;
+  } catch {
+    return false;
   }
 }

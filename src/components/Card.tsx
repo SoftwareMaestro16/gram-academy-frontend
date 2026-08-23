@@ -14,7 +14,7 @@ interface CardProps {
  *  light (none in dark, via `.elev`). Tapable cards tint on hover/press. */
 export function Card({ children, onClick, featured, className }: CardProps) {
   const base = cn(
-    "elev rounded-2xl border border-border p-4 text-left",
+    "elev rounded-2xl border border-border p-3 text-left xs:p-4",
     featured ? "bg-accent-soft" : "bg-surface",
     className,
   );

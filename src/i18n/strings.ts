@@ -28,7 +28,6 @@ export interface ScreenMessages {
     certificatePending: string;
     certificateMinted: string;
     buy: string;
-    purchaseSoon: string;
     discountBadge: string;
     completed: string;
     quiz: string;
@@ -81,17 +80,61 @@ export interface ScreenMessages {
     language: string;
     theme: string;
     wallet: string;
-    walletSoon: string;
     referral: string;
-    referralSoon: string;
     certificates: string;
     certificatesSoon: string;
     premium: string;
     discountReminder: string;
     builtOn: string;
   };
+  wallet: {
+    connecting: string;
+    verifying: string;
+    network: string;
+    mainnet: string;
+    testnet: string;
+    errorChallenge: string;
+    errorDeclined: string;
+    errorVerify: string;
+    errorDisconnect: string;
+  };
+  referral: {
+    teaser: string;
+    copy: string;
+    copied: string;
+    share: string;
+    invited: string;
+    walletsConnected: string;
+    minted: string;
+    earned: string;
+  };
   outside: { title: string; body: string; button: string };
   error: { generic: string };
+  footer: { builtOn: string; credit: string; channel: string };
+  /** Certificate mint flow (Course screen — docs/05-frontend-spec.md §4.2). */
+  mint: {
+    walletRequired: string;
+    goToProfile: string;
+    waitingTitle: string;
+    waitingBody: string;
+    confirmedTitle: string;
+    serial: string;
+    viewExplorer: string;
+    rejected: string;
+    pending: string;
+    tryAgain: string;
+    errorAlreadyMinted: string;
+    errorNotCompleted: string;
+    errorWalletRequired: string;
+  };
+  /** Telegram Stars purchase flow (Course screen — docs/05-frontend-spec.md §5). */
+  purchase: {
+    opening: string;
+    confirming: string;
+    cancelled: string;
+    failed: string;
+    dismiss: string;
+  };
 }
 
 export const screenMessages: Record<Locale, ScreenMessages> = {
@@ -117,7 +160,6 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       certificatePending: "Awaiting on-chain confirmation",
       certificateMinted: "View certificate",
       buy: "Buy for {n} ⭐",
-      purchaseSoon: "Purchases open soon",
       discountBadge: "-15%",
       completed: "Completed",
       quiz: "Quiz",
@@ -167,14 +209,33 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       language: "Language",
       theme: "Theme",
       wallet: "Wallet",
-      walletSoon: "Wallet connection coming soon",
       referral: "Invite friends",
-      referralSoon: "Referral rewards coming soon",
       certificates: "My certificates",
       certificatesSoon: "Finish a course to earn one",
       premium: "Premium",
       discountReminder: "You have -15% on paid courses",
       builtOn: "Built on",
+    },
+    wallet: {
+      connecting: "Connecting…",
+      verifying: "Verifying…",
+      network: "Network",
+      mainnet: "Mainnet",
+      testnet: "Testnet",
+      errorChallenge: "Couldn't start the connection. Try again.",
+      errorDeclined: "The wallet didn't confirm ownership. Try again.",
+      errorVerify: "Couldn't verify the wallet. Try again.",
+      errorDisconnect: "Couldn't fully disconnect. Try again.",
+    },
+    referral: {
+      teaser: "Connect your wallet to get your referral link.",
+      copy: "Copy",
+      copied: "Copied!",
+      share: "Share",
+      invited: "Invited",
+      walletsConnected: "Wallets connected",
+      minted: "Certificates minted",
+      earned: "TON earned",
     },
     outside: {
       title: "Open in Telegram",
@@ -182,6 +243,29 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       button: "Open the bot",
     },
     error: { generic: "Something went wrong." },
+    footer: { builtOn: "Built on", credit: "© {year} Gram Academy", channel: "News channel" },
+    mint: {
+      walletRequired: "Connect a wallet in your profile to mint this certificate.",
+      goToProfile: "Go to Profile",
+      waitingTitle: "Confirming on-chain",
+      waitingBody: "This usually takes under a minute.",
+      confirmedTitle: "Certificate minted!",
+      serial: "Serial #{n}",
+      viewExplorer: "View on TON Explorer",
+      rejected: "You cancelled the transaction. You can try again.",
+      pending: "Still confirming — this can take a moment. You can try again.",
+      tryAgain: "Try again",
+      errorAlreadyMinted: "This certificate has already been minted.",
+      errorNotCompleted: "Finish the course to unlock your certificate.",
+      errorWalletRequired: "Connect a wallet first.",
+    },
+    purchase: {
+      opening: "Opening payment…",
+      confirming: "Confirming your purchase…",
+      cancelled: "Payment cancelled.",
+      failed: "Payment didn't go through. You can try again.",
+      dismiss: "Dismiss",
+    },
   },
   ru: {
     home: {
@@ -205,7 +289,6 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       certificatePending: "Ждём подтверждение в сети",
       certificateMinted: "Открыть сертификат",
       buy: "Купить за {n} ⭐",
-      purchaseSoon: "Покупка скоро откроется",
       discountBadge: "-15%",
       completed: "Пройдено",
       quiz: "Тест",
@@ -256,14 +339,33 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       language: "Язык",
       theme: "Тема",
       wallet: "Кошелёк",
-      walletSoon: "Подключение кошелька скоро",
       referral: "Приглашай друзей",
-      referralSoon: "Реферальные награды скоро",
       certificates: "Мои сертификаты",
       certificatesSoon: "Пройди курс, чтобы получить",
       premium: "Premium",
       discountReminder: "У тебя -15% на платные курсы",
       builtOn: "Built on",
+    },
+    wallet: {
+      connecting: "Подключение…",
+      verifying: "Проверка…",
+      network: "Сеть",
+      mainnet: "Mainnet",
+      testnet: "Testnet",
+      errorChallenge: "Не удалось начать подключение. Попробуй ещё раз.",
+      errorDeclined: "Кошелёк не подтвердил владение адресом. Попробуй ещё раз.",
+      errorVerify: "Не удалось проверить кошелёк. Попробуй ещё раз.",
+      errorDisconnect: "Не удалось полностью отключить кошелёк. Попробуй ещё раз.",
+    },
+    referral: {
+      teaser: "Подключи кошелёк, чтобы получить реферальную ссылку.",
+      copy: "Скопировать",
+      copied: "Скопировано!",
+      share: "Поделиться",
+      invited: "Приглашено",
+      walletsConnected: "Подключили кошелёк",
+      minted: "Сминтили сертификат",
+      earned: "Заработано TON",
     },
     outside: {
       title: "Откройте в Telegram",
@@ -271,6 +373,29 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       button: "Открыть бота",
     },
     error: { generic: "Что-то пошло не так." },
+    footer: { builtOn: "Built on", credit: "© {year} Gram Academy", channel: "Новости в Telegram" },
+    mint: {
+      walletRequired: "Подключите кошелёк в профиле, чтобы получить сертификат.",
+      goToProfile: "В профиль",
+      waitingTitle: "Подтверждаем в сети",
+      waitingBody: "Обычно это занимает меньше минуты.",
+      confirmedTitle: "Сертификат получен!",
+      serial: "Серийный № {n}",
+      viewExplorer: "Открыть в TON Explorer",
+      rejected: "Вы отменили транзакцию. Можно попробовать снова.",
+      pending: "Всё ещё подтверждается — это может занять немного времени. Можно попробовать снова.",
+      tryAgain: "Попробовать снова",
+      errorAlreadyMinted: "Этот сертификат уже получен.",
+      errorNotCompleted: "Заверши курс, чтобы открыть сертификат.",
+      errorWalletRequired: "Сначала подключите кошелёк.",
+    },
+    purchase: {
+      opening: "Открываем оплату…",
+      confirming: "Подтверждаем покупку…",
+      cancelled: "Оплата отменена.",
+      failed: "Оплата не прошла. Можно попробовать снова.",
+      dismiss: "Скрыть",
+    },
   },
   zh: {
     home: {
@@ -294,7 +419,6 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       certificatePending: "等待链上确认",
       certificateMinted: "查看证书",
       buy: "{n} ⭐ 购买",
-      purchaseSoon: "购买功能即将开放",
       discountBadge: "-15%",
       completed: "已完成",
       quiz: "测验",
@@ -343,14 +467,33 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       language: "语言",
       theme: "主题",
       wallet: "钱包",
-      walletSoon: "钱包连接即将上线",
       referral: "邀请好友",
-      referralSoon: "邀请奖励即将上线",
       certificates: "我的证书",
       certificatesSoon: "完成课程即可获得",
       premium: "Premium",
       discountReminder: "付费课程可享 -15%",
       builtOn: "Built on",
+    },
+    wallet: {
+      connecting: "连接中…",
+      verifying: "验证中…",
+      network: "网络",
+      mainnet: "Mainnet",
+      testnet: "Testnet",
+      errorChallenge: "无法发起连接，请重试。",
+      errorDeclined: "钱包未确认所有权，请重试。",
+      errorVerify: "钱包验证失败，请重试。",
+      errorDisconnect: "未能完全断开连接，请重试。",
+    },
+    referral: {
+      teaser: "连接钱包即可获取你的邀请链接。",
+      copy: "复制",
+      copied: "已复制！",
+      share: "分享",
+      invited: "已邀请",
+      walletsConnected: "已连接钱包",
+      minted: "已铸造证书",
+      earned: "已赚取 TON",
     },
     outside: {
       title: "在 Telegram 中打开",
@@ -358,6 +501,29 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       button: "打开机器人",
     },
     error: { generic: "出错了。" },
+    footer: { builtOn: "Built on", credit: "© {year} Gram Academy", channel: "Telegram 频道" },
+    mint: {
+      walletRequired: "请在个人中心连接钱包以领取证书。",
+      goToProfile: "前往个人中心",
+      waitingTitle: "链上确认中",
+      waitingBody: "通常不到一分钟。",
+      confirmedTitle: "证书已铸造！",
+      serial: "编号 #{n}",
+      viewExplorer: "在 TON 浏览器中查看",
+      rejected: "你取消了交易，可以重试。",
+      pending: "仍在确认中，可能需要一点时间。可以重试。",
+      tryAgain: "重试",
+      errorAlreadyMinted: "该证书已被铸造。",
+      errorNotCompleted: "完成课程后即可领取证书。",
+      errorWalletRequired: "请先连接钱包。",
+    },
+    purchase: {
+      opening: "正在打开支付…",
+      confirming: "正在确认购买…",
+      cancelled: "支付已取消。",
+      failed: "支付未成功，可以重试。",
+      dismiss: "关闭",
+    },
   },
 };
 

@@ -1,18 +1,20 @@
 import type { ReactNode } from "react";
-import { Award, Moon, Star, Sun, Users, Wallet } from "lucide-react";
+import { Award, Moon, Star, Sun, Wallet } from "lucide-react";
 import { Screen } from "../../components/Screen";
 import { Card } from "../../components/Card";
 import { Badge } from "../../components/Badge";
+import { Button } from "../../components/Button";
 import { SegmentedControl } from "../../components/SegmentedControl";
-import { TonAttribution } from "../../components/Logo";
 import { ErrorCard, SkeletonList } from "../../components/StateViews";
 import { useT } from "../../i18n/useT";
 import { localeShortLabels, LOCALES, type Locale } from "../../i18n/strings";
 import { useMe, useUpdateLocaleMutation } from "../../api/queries";
 import { useAppStore } from "../../state/useAppStore";
 import { useEffectiveTheme } from "../../lib/useTheme";
+import { useWalletProof, type WalletProofErrorCode } from "../../lib/useWalletProof";
 import type { Theme } from "../../lib/theme";
 import type { MeResponse } from "../../api/schemas";
+import { ReferralCard } from "./ReferralCard";
 
 function Avatar({ user }: { user: MeResponse["user"] }) {
   const initials =
@@ -63,8 +65,86 @@ function PlaceholderCard({
   );
 }
 
+/** `UQAb…9f3Y`-style shortened display — never used for anything but
+ *  rendering; the full address only ever leaves this component via the
+ *  server calls in `useWalletProof`. */
+function shortenAddress(address: string): string {
+  if (address.length <= 14) return address;
+  return `${address.slice(0, 6)}…${address.slice(-6)}`;
+}
+
+function walletErrorText(
+  t: ReturnType<typeof useT>["t"],
+  code: WalletProofErrorCode,
+): string {
+  switch (code) {
+    case "challenge_failed":
+      return t.wallet.errorChallenge;
+    case "proof_declined":
+      return t.wallet.errorDeclined;
+    case "verify_failed":
+      return t.wallet.errorVerify;
+    case "disconnect_failed":
+      return t.wallet.errorDisconnect;
+  }
+}
+
+function WalletCard({ wallet }: { wallet: MeResponse["wallet"] }) {
+  const { t, c } = useT();
+  const { status, error, isBusy, connect, disconnect } = useWalletProof();
+
+  const connectLabel =
+    status === "connecting"
+      ? t.wallet.connecting
+      : status === "verifying"
+        ? t.wallet.verifying
+        : c.wallet.connect;
+
+  return (
+    <Card>
+      <div className="flex items-center gap-2 font-medium">
+        <span className="text-text-muted">
+          <Wallet className="h-4 w-4" />
+        </span>
+        {t.profile.wallet}
+      </div>
+
+      {wallet ? (
+        <div className="mt-3 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <span className="font-mono text-sm">{shortenAddress(wallet.address)}</span>
+            <Badge tone={wallet.network === "mainnet" ? "accent" : "neutral"}>
+              {wallet.network === "mainnet" ? t.wallet.mainnet : t.wallet.testnet}
+            </Badge>
+          </div>
+          <Button
+            variant="secondary"
+            fullWidth
+            onClick={() => void disconnect()}
+            disabled={isBusy}
+          >
+            {c.wallet.disconnect}
+          </Button>
+        </div>
+      ) : (
+        <Button
+          variant="primary"
+          fullWidth
+          className="mt-3"
+          onClick={() => void connect()}
+          disabled={isBusy}
+        >
+          {connectLabel}
+        </Button>
+      )}
+
+      {error && <p className="mt-2 text-sm text-danger">{walletErrorText(t, error)}</p>}
+    </Card>
+  );
+}
+
 export function ProfileScreen() {
-  const { t, c, locale } = useT();
+  const { t, locale } = useT();
   const setLocale = useAppStore((s) => s.setLocale);
   const setThemeOverride = useAppStore((s) => s.setThemeOverride);
   const theme = useEffectiveTheme();
@@ -122,7 +202,7 @@ export function ProfileScreen() {
       )}
 
       {/* Settings: language + theme */}
-      <Card className="mt-6 space-y-4">
+      <Card className="mt-4 space-y-4 xs:mt-6">
         <Field label={t.profile.language}>
           <SegmentedControl<Locale>
             ariaLabel={t.profile.language}
@@ -149,30 +229,16 @@ export function ProfileScreen() {
         </Field>
       </Card>
 
-      {/* Wave 2 placeholders */}
-      <section className="mt-6 space-y-3">
-        <PlaceholderCard
-          icon={<Wallet className="h-4 w-4" />}
-          title={c.wallet.connect}
-          hint={t.profile.walletSoon}
-        />
-        <PlaceholderCard
-          icon={<Users className="h-4 w-4" />}
-          title={t.profile.referral}
-          hint={t.profile.referralSoon}
-        />
+      {/* Wallet + referral */}
+      <section className="mt-4 space-y-3 xs:mt-6">
+        <WalletCard wallet={me.wallet} />
+        <ReferralCard hasWallet={me.wallet !== null} />
         <PlaceholderCard
           icon={<Award className="h-4 w-4" />}
           title={t.profile.certificates}
           hint={t.profile.certificatesSoon}
         />
       </section>
-
-      {/* Built on TON attribution */}
-      <div className="mt-8 flex items-center justify-center gap-2 text-xs text-text-faint">
-        <span>{t.profile.builtOn}</span>
-        <TonAttribution />
-      </div>
     </Screen>
   );
 }

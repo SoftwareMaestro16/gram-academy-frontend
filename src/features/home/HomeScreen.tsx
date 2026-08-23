@@ -1,7 +1,5 @@
 import { GraduationCap } from "lucide-react";
 import { Screen } from "../../components/Screen";
-import { Logo } from "../../components/Logo";
-import { ThemeToggle } from "../../components/ThemeToggle";
 import { CourseCard } from "../../components/CourseCard";
 import { EmptyState, ErrorCard, SkeletonList } from "../../components/StateViews";
 import { useT } from "../../i18n/useT";
@@ -9,8 +7,10 @@ import { useSectionsQuery } from "../../api/queries";
 import { useAppStore } from "../../state/useAppStore";
 
 /**
- * Catalog home (DESIGN.md §Home): branded header, screen title + intro, then
- * each section with its course cards. Tapping a card opens the course detail.
+ * Catalog home (DESIGN.md §Home): screen title + intro, then each section
+ * with its course cards. Tapping a card opens the course detail. The
+ * branded logo + theme toggle live in the persistent site `Header` now
+ * (rendered once by `AppShell`), not duplicated here.
  */
 export function HomeScreen() {
   const { t } = useT();
@@ -19,12 +19,7 @@ export function HomeScreen() {
 
   return (
     <Screen withTabBar>
-      <div className="safe-top flex items-center justify-between pb-2 pt-1">
-        <Logo />
-        <ThemeToggle className="-mr-2" />
-      </div>
-
-      <div className="mb-6">
+      <div className="mb-3 xs:mb-6">
         <h1 className="text-2xl font-bold">{t.home.title}</h1>
         <p className="mt-1 text-sm text-text-muted">{t.home.subtitle}</p>
       </div>
@@ -39,7 +34,7 @@ export function HomeScreen() {
           title={t.home.empty}
         />
       ) : (
-        <div className="space-y-7">
+        <div className="space-y-4 xs:space-y-7">
           {data.map((section) => (
             <section key={section.slug}>
               <h2 className="mb-1 text-lg font-medium">{section.title}</h2>
@@ -51,7 +46,7 @@ export function HomeScreen() {
               {section.courses.length === 0 ? (
                 <p className="text-sm text-text-faint">{t.section.empty}</p>
               ) : (
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {section.courses.map((course) => (
                     <CourseCard
                       key={course.slug}
