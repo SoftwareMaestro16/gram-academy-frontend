@@ -145,7 +145,7 @@ body {
   padding-top: env(safe-area-inset-top, 0px);
 }
 :root[data-tg-fullscreen-requested="true"] .safe-top {
-  padding-top: calc(env(safe-area-inset-top, 0px) + 56px);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 54px);
 }
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
