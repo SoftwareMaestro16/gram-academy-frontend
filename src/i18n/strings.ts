@@ -267,7 +267,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       invited: "Invited",
       walletsConnected: "Wallets connected",
       minted: "Certificates minted",
-      earned: "TON earned",
+      earned: "Earned",
     },
     outside: {
       title: "Open in Telegram",
@@ -412,7 +412,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       invited: "Приглашено",
       walletsConnected: "Подключили кошелёк",
       minted: "Сминтили сертификат",
-      earned: "Заработано TON",
+      earned: "Заработано",
     },
     outside: {
       title: "Откройте в Telegram",
@@ -555,7 +555,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       invited: "已邀请",
       walletsConnected: "已连接钱包",
       minted: "已铸造证书",
-      earned: "已赚取 TON",
+      earned: "已赚取",
     },
     outside: {
       title: "在 Telegram 中打开",

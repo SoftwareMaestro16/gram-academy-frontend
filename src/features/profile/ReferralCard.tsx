@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Check, Copy, Share2, Users } from "lucide-react";
 import { Card } from "../../components/Card";
+import { GramMark } from "../../components/Logo";
 import { Button } from "../../components/Button";
 import { ErrorCard, SkeletonList } from "../../components/StateViews";
 import { useT } from "../../i18n/useT";
@@ -34,10 +35,10 @@ function TeaserCard() {
   );
 }
 
-function StatTile({ label, value }: { label: string; value: string | number }) {
+function StatTile({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="rounded-xl bg-surface-2 p-3">
-      <p className="text-lg font-semibold">{value}</p>
+      <p className="flex items-center gap-1.5 text-lg font-semibold">{value}</p>
       <p className="text-xs text-text-muted">{label}</p>
     </div>
   );
@@ -103,7 +104,15 @@ function ConnectedReferralCard({ data }: { data: Referrals }) {
         <StatTile label={t.referral.invited} value={data.invitedCount} />
         <StatTile label={t.referral.walletsConnected} value={data.referralsWithWallet} />
         <StatTile label={t.referral.minted} value={data.mintedByReferrals} />
-        <StatTile label={t.referral.earned} value={`${formatTon(data.earnedTonNano)} TON`} />
+        <StatTile
+          label={t.referral.earned}
+          value={
+            <>
+              {formatTon(data.earnedTonNano)}
+              <GramMark className="h-4" />
+            </>
+          }
+        />
       </div>
     </Card>
   );
