@@ -103,7 +103,12 @@ function AppShell() {
   const hideBottomTabBar = view.name === "lesson" || view.name === "quiz";
 
   return (
-    <div className="flex min-h-full flex-col">
+    // min-h-dvh (not min-h-full): a percentage-height chain up through
+    // html/body/#root is fragile inside Telegram's WebView host (observed
+    // not resolving there, leaving the Footer floating right under short
+    // content instead of pinned to the viewport bottom) — dvh sidesteps
+    // that chain entirely.
+    <div className="flex min-h-dvh flex-col">
       {/* Header is `sticky`, so it needs to be first in DOM/flow order to pin
        *  correctly as the page scrolls. */}
       <Header />

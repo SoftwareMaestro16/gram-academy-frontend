@@ -6,6 +6,7 @@ import { useMe } from "../api/queries";
 import { useWalletBalanceQuery } from "../api/wallet";
 import { useWalletProof } from "../lib/useWalletProof";
 import { impactHaptic } from "../lib/telegram";
+import { formatTon } from "../lib/formatTon";
 import { Card } from "./Card";
 import { Button } from "./Button";
 import { Badge } from "./Badge";
@@ -18,17 +19,6 @@ import { Spinner } from "./StateViews";
 function shortenAddress(address: string): string {
   if (address.length <= 10) return address;
   return `${address.slice(0, 4)}…${address.slice(-4)}`;
-}
-
-/** Mirrors `ReferralCard.tsx`'s local `formatTon()` — a stringified nanoton
- *  amount (wire convention: bigint-as-string) as TON, 2-4 decimals, trailing
- *  zeros trimmed to a minimum of 2. Display only, never business logic. */
-function formatTon(nanoTonString: string): string {
-  const value = Number(nanoTonString) / 1_000_000_000;
-  if (!Number.isFinite(value)) return "0.00";
-  const fixed = value.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
-  const decimals = fixed.includes(".") ? fixed.split(".")[1]?.length ?? 0 : 0;
-  return decimals < 2 ? value.toFixed(2) : fixed;
 }
 
 /**

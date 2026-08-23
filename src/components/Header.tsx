@@ -18,7 +18,7 @@ export function Header() {
       <div className="content-col flex h-12 items-center gap-3 px-3 xs:px-4 md:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-2">
           <Logo className="shrink-0" />
-          <span className="truncate text-sm font-semibold text-text sm:text-base">
+          <span className="truncate text-base font-semibold text-text sm:text-lg">
             Gram Academy
           </span>
         </div>

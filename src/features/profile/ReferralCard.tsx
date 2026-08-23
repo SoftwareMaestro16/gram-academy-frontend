@@ -8,17 +8,7 @@ import { useT } from "../../i18n/useT";
 import { useReferralsQuery } from "../../api/referrals";
 import type { Referrals } from "../../api/schemas";
 import { impactHaptic, switchInlineQuery } from "../../lib/telegram";
-
-/** Formats a stringified nanoton amount (wire convention: bigint-as-string)
- *  as TON, 2-4 decimals, trailing zeros trimmed to a minimum of 2. Never
- *  computed for business logic — display only, the server owns the totals. */
-function formatTon(nanoTonString: string): string {
-  const value = Number(nanoTonString) / 1_000_000_000;
-  if (!Number.isFinite(value)) return "0.00";
-  const fixed = value.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
-  const decimals = fixed.includes(".") ? fixed.split(".")[1]?.length ?? 0 : 0;
-  return decimals < 2 ? value.toFixed(2) : fixed;
-}
+import { formatTon } from "../../lib/formatTon";
 
 function TeaserCard() {
   const { t } = useT();
