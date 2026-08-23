@@ -39,25 +39,29 @@ export function TabBar() {
 
   return (
     <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-20">
-      <div className="content-col flex rounded-t-2xl border-t border-border bg-surface/95 backdrop-blur">
-        {tabs.map(({ id, label, Icon }) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => onSelect(id)}
-            className={cn(
-              "flex min-h-11 flex-1 flex-col items-center gap-1 py-2.5 text-xs transition-colors",
-              active === id ? "text-accent" : "text-text-muted",
-            )}
-          >
-            <Icon className="h-5 w-5" />
-            {label}
-          </button>
-        ))}
+      {/* One content-col-width element carries both the button row AND the safe-area padding below
+       *  it, so the bar and the notch-safe inset (behind a device home indicator) are the same
+       *  narrow shape — not a full-width strip under a narrower pill. Safe here (unlike Header's
+       *  own padding-vs-height fix) because nothing on this element fixes a total height that the
+       *  padding could squeeze; each button sizes itself via `min-h-11`. */}
+      <div className="safe-bottom content-col rounded-t-2xl border-t border-border bg-surface/95 backdrop-blur">
+        <div className="flex">
+          {tabs.map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onSelect(id)}
+              className={cn(
+                "flex min-h-11 flex-1 flex-col items-center gap-1 py-2.5 text-xs transition-colors",
+                active === id ? "text-accent" : "text-text-muted",
+              )}
+            >
+              <Icon className="h-5 w-5" />
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
-      {/* Full-width strip exactly covering the safe-area inset (behind a device home indicator) —
-       *  same color as the bar above so it reads as a seamless continuation, not a bare gap. */}
-      <div className="safe-bottom bg-surface/95 backdrop-blur" />
     </nav>
   );
 }
