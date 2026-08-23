@@ -19,12 +19,22 @@ export function Logo({ className }: { className?: string }) {
 }
 
 /** "Built on TON" attribution — the official TON logo, never recolored
- *  (assets/README.md): white variant on dark, dark variant on light. */
+ *  (assets/README.md): white variant on dark, dark variant on light.
+ *  `className` sizes the mark itself (e.g. "h-5") — merged onto both theme
+ *  variants via `cn`, so callers can size up without a wrapper transform. */
 export function TonAttribution({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex items-center", className)} aria-label="Built on TON">
-      <img src="/ton-color.svg" alt="TON" className="theme-light-only h-4 w-auto" />
-      <img src="/ton-white.svg" alt="TON" className="theme-dark-only h-4 w-auto" />
+    <span className="inline-flex items-center" aria-label="Built on TON">
+      <img
+        src="/ton-color.svg"
+        alt="TON"
+        className={cn("theme-light-only h-4 w-auto", className)}
+      />
+      <img
+        src="/ton-white.svg"
+        alt="TON"
+        className={cn("theme-dark-only h-4 w-auto", className)}
+      />
     </span>
   );
 }

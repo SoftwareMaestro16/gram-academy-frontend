@@ -4,7 +4,7 @@ import { useT } from "../i18n/useT";
 import { useAppStore, type AppView, type RootTab } from "../state/useAppStore";
 import { selectionHaptic } from "../lib/telegram";
 import { Logo } from "./Logo";
-import { ThemeToggle } from "./ThemeToggle";
+import { WalletControl } from "./WalletControl";
 
 /** Maps any view to the root tab it belongs under. */
 function tabForView(view: AppView): RootTab {
@@ -18,10 +18,13 @@ function tabForView(view: AppView): RootTab {
  * for every screen (including lesson/quiz, unlike the old TabBar-embedded
  * top nav it replaces), not duplicated per-screen.
  *
- * <600px: minimal — logo + theme toggle only. Primary nav stays in the
- * bottom TabBar so it isn't shown twice.
- * ≥600px: logo + primary nav (Home/Profile) + theme toggle, as a slim
- * sticky bar (the bottom TabBar hides itself at that width instead).
+ * <600px: minimal — logo + wordmark + wallet control only. Primary nav stays
+ * in the bottom TabBar so it isn't shown twice.
+ * ≥600px: logo + wordmark + primary nav (Home/Profile) + wallet control, as
+ * a slim sticky bar (the bottom TabBar hides itself at that width instead).
+ *
+ * The theme toggle that used to live here was removed — it's still reachable
+ * from Profile's language/theme card, so nothing is lost.
  */
 export function Header() {
   const { c, t } = useT();
@@ -42,8 +45,13 @@ export function Header() {
 
   return (
     <header className="safe-top sticky top-0 z-30 rounded-b-2xl bg-surface/95 shadow-[0_1px_0_0_var(--border),0_4px_16px_-8px_rgba(0,0,0,0.25)] backdrop-blur">
-      <div className="content-col flex h-14 items-center gap-3 px-3 xs:px-4 sm:gap-6 md:px-6 lg:px-8">
-        <Logo className="shrink-0" />
+      <div className="content-col flex h-12 items-center gap-3 px-3 xs:px-4 sm:gap-6 md:px-6 lg:px-8">
+        <div className="flex min-w-0 items-center gap-2">
+          <Logo className="shrink-0" />
+          <span className="truncate text-sm font-semibold text-text sm:text-base">
+            Gram Academy
+          </span>
+        </div>
 
         {/* ≥600px only: primary nav lives here instead of the bottom tab bar. */}
         <nav
@@ -68,7 +76,7 @@ export function Header() {
           ))}
         </nav>
 
-        <ThemeToggle className="ml-auto shrink-0" />
+        <WalletControl className="ml-auto shrink-0" />
       </div>
     </header>
   );

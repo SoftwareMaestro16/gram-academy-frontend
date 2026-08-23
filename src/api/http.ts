@@ -13,8 +13,10 @@ const rawBase =
     ? import.meta.env.VITE_API_BASE_URL
     : "/api";
 
-/** Base with any trailing slash trimmed. */
-const API_BASE = rawBase.replace(/\/+$/, "");
+/** Base with any trailing slash trimmed. Exported for building absolute URLs
+ *  to endpoints served outside the JSON API (e.g. static asset paths like
+ *  `/v1/metadata/images/**`) that still need the same origin rewrite. */
+export const API_BASE = rawBase.replace(/\/+$/, "");
 
 export class ApiError extends Error {
   readonly path: string;

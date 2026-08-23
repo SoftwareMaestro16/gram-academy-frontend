@@ -1,10 +1,13 @@
 import { z } from "zod";
+import { useQuery } from "@tanstack/react-query";
 import type { Account, TonProofItemReplySuccess } from "@tonconnect/ui-react";
-import { postJson } from "./http";
+import { postJson, requestJson } from "./http";
 import {
   meResponseSchema,
+  walletBalanceSchema,
   walletProofChallengeSchema,
   type MeResponse,
+  type WalletBalance,
   type WalletProofChallenge,
 } from "./schemas";
 
@@ -55,4 +58,28 @@ export function verifyWalletProof(
  *  Response shape isn't pinned by the spec; callers refetch `me` after. */
 export function disconnectWalletBinding(): Promise<unknown> {
   return postJson("/v1/wallet/disconnect", undefined, z.unknown());
+}
+
+/** GET /v1/wallet/balance — the caller's bound wallet's live TON balance.
+ *  Session-authenticated, no params. 404 `no_wallet` when nothing is bound
+ *  (see {@link walletBalanceSchema}). */
+export function fetchWalletBalance(): Promise<WalletBalance> {
+  return requestJson("/v1/wallet/balance", walletBalanceSchema);
+}
+
+export const walletKeys = {
+  balance: ["wallet", "balance"] as const,
+};
+
+/** Only meaningful once a wallet is bound — callers gate `enabled` on
+ *  `me.wallet !== null` (mirrors `useReferralsQuery`'s pattern). No retry:
+ *  a 404 `no_wallet` isn't worth retrying, and the header popover offers a
+ *  natural re-fetch (close/reopen) for transient failures. */
+export function useWalletBalanceQuery(enabled: boolean) {
+  return useQuery({
+    queryKey: walletKeys.balance,
+    queryFn: fetchWalletBalance,
+    enabled,
+    retry: false,
+  });
 }

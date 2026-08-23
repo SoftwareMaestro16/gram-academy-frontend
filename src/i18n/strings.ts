@@ -79,6 +79,7 @@ export interface ScreenMessages {
     title: string;
     language: string;
     theme: string;
+    preferences: string;
     wallet: string;
     referral: string;
     certificates: string;
@@ -107,6 +108,12 @@ export interface ScreenMessages {
     errorDeclined: string;
     errorVerify: string;
     errorDisconnect: string;
+    /** Header wallet control (Header.tsx) — short label below the `sm:`
+     *  breakpoint; `c.wallet.connect` ("Connect Wallet") is used at `sm:`+. */
+    connectShort: string;
+    balance: string;
+    copyAddress: string;
+    copied: string;
   };
   referral: {
     teaser: string;
@@ -218,6 +225,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       title: "Profile",
       language: "Language",
       theme: "Theme",
+      preferences: "Preferences",
       wallet: "Wallet",
       referral: "Invite friends",
       certificates: "My certificates",
@@ -246,6 +254,10 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       errorDeclined: "The wallet didn't confirm ownership. Try again.",
       errorVerify: "Couldn't verify the wallet. Try again.",
       errorDisconnect: "Couldn't fully disconnect. Try again.",
+      connectShort: "Connect",
+      balance: "Balance",
+      copyAddress: "Copy address",
+      copied: "Copied!",
     },
     referral: {
       teaser: "Connect your wallet to get your referral link.",
@@ -358,6 +370,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       title: "Профиль",
       language: "Язык",
       theme: "Тема",
+      preferences: "Настройки",
       wallet: "Кошелёк",
       referral: "Приглашай друзей",
       certificates: "Мои сертификаты",
@@ -386,6 +399,10 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       errorDeclined: "Кошелёк не подтвердил владение адресом. Попробуй ещё раз.",
       errorVerify: "Не удалось проверить кошелёк. Попробуй ещё раз.",
       errorDisconnect: "Не удалось полностью отключить кошелёк. Попробуй ещё раз.",
+      connectShort: "Подключить",
+      balance: "Баланс",
+      copyAddress: "Скопировать адрес",
+      copied: "Скопировано!",
     },
     referral: {
       teaser: "Подключи кошелёк, чтобы получить реферальную ссылку.",
@@ -496,6 +513,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       title: "个人中心",
       language: "语言",
       theme: "主题",
+      preferences: "偏好设置",
       wallet: "钱包",
       referral: "邀请好友",
       certificates: "我的证书",
@@ -524,6 +542,10 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       errorDeclined: "钱包未确认所有权，请重试。",
       errorVerify: "钱包验证失败，请重试。",
       errorDisconnect: "未能完全断开连接，请重试。",
+      connectShort: "连接",
+      balance: "余额",
+      copyAddress: "复制地址",
+      copied: "已复制！",
     },
     referral: {
       teaser: "连接钱包即可获取你的邀请链接。",

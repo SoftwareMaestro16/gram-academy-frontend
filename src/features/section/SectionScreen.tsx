@@ -1,5 +1,6 @@
 import { Screen } from "../../components/Screen";
 import { CourseCard } from "../../components/CourseCard";
+import { SectionImage } from "../../components/SectionImage";
 import { EmptyState, ErrorCard, SkeletonList } from "../../components/StateViews";
 import { useT } from "../../i18n/useT";
 import { useSectionsQuery } from "../../api/queries";
@@ -19,6 +20,9 @@ export function SectionScreen({ sectionSlug }: { sectionSlug: string }) {
 
   return (
     <Screen title={section?.title} onBack={goBack} withTabBar>
+      {section && (
+        <SectionImage slug={section.slug} className="mb-3 h-32 xs:mb-4 xs:h-40" />
+      )}
       {isPending ? (
         <SkeletonList rows={3} />
       ) : isError ? (

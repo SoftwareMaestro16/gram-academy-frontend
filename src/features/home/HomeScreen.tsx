@@ -1,14 +1,46 @@
 import { GraduationCap } from "lucide-react";
 import { Screen } from "../../components/Screen";
-import { CourseCard } from "../../components/CourseCard";
+import { Card } from "../../components/Card";
+import { MetaRow } from "../../components/MetaRow";
+import { SectionImage } from "../../components/SectionImage";
 import { EmptyState, ErrorCard, SkeletonList } from "../../components/StateViews";
 import { useT } from "../../i18n/useT";
+import { format } from "../../i18n/strings";
 import { useSectionsQuery } from "../../api/queries";
 import { useAppStore } from "../../state/useAppStore";
+import type { Section } from "../../api/schemas";
+
+/** One catalog card per section (image + title + description + course
+ *  count) — tapping drills into `SectionScreen`, which lists that section's
+ *  courses with the usual lesson/quiz/price/progress meta. */
+function SectionCard({
+  section,
+  onClick,
+}: {
+  section: Section;
+  onClick: () => void;
+}) {
+  const { t } = useT();
+  return (
+    <Card onClick={onClick}>
+      <SectionImage slug={section.slug} />
+      <h3 className="mt-3 font-medium leading-snug">{section.title}</h3>
+      {section.description && (
+        <p className="mt-1 line-clamp-2 text-sm text-text-muted">
+          {section.description}
+        </p>
+      )}
+      <MetaRow
+        className="mt-2"
+        items={[format(t.home.courses, { n: section.courses.length })]}
+      />
+    </Card>
+  );
+}
 
 /**
- * Catalog home (DESIGN.md §Home): screen title + intro, then each section
- * with its course cards. Tapping a card opens the course detail. The
+ * Catalog home (DESIGN.md §Home): screen title + intro, then a grid of
+ * section cards. Tapping a card opens that section's course list — the
  * branded logo + theme toggle live in the persistent site `Header` now
  * (rendered once by `AppShell`), not duplicated here.
  */
@@ -34,31 +66,13 @@ export function HomeScreen() {
           title={t.home.empty}
         />
       ) : (
-        <div className="space-y-4 xs:space-y-7">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {data.map((section) => (
-            <section key={section.slug}>
-              <h2 className="mb-1 text-lg font-medium">{section.title}</h2>
-              {section.description && (
-                <p className="mb-3 text-sm text-text-muted">
-                  {section.description}
-                </p>
-              )}
-              {section.courses.length === 0 ? (
-                <p className="text-sm text-text-faint">{t.section.empty}</p>
-              ) : (
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {section.courses.map((course) => (
-                    <CourseCard
-                      key={course.slug}
-                      course={course}
-                      onClick={() =>
-                        setView({ name: "course", slug: course.slug })
-                      }
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
+            <SectionCard
+              key={section.slug}
+              section={section}
+              onClick={() => setView({ name: "section", sectionSlug: section.slug })}
+            />
           ))}
         </div>
       )}

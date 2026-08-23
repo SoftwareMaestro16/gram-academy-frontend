@@ -60,6 +60,19 @@ export const walletProofChallengeSchema = z.object({
 });
 export type WalletProofChallenge = z.infer<typeof walletProofChallengeSchema>;
 
+// --- Wallet balance (GET /v1/wallet/balance, session-authenticated) --------
+//
+// `balanceNano` arrives as a stringified bigint (nanoton) per the wire
+// convention — formatted to TON client-side, never computed. 404
+// `{error:"no_wallet"}` when nothing is bound yet; callers only fetch this
+// once `MeResponse.wallet` is non-null.
+
+export const walletBalanceSchema = z.object({
+  address: z.string(),
+  balanceNano: z.string(),
+});
+export type WalletBalance = z.infer<typeof walletBalanceSchema>;
+
 // --- Referrals (docs/08 §6: GET /v1/referrals/my) ---------------------------
 //
 // `referralLink` is null until a wallet is connected (server-computed).

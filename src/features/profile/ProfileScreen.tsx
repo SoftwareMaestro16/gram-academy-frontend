@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Award, ChevronRight, Moon, Star, Sun, Wallet } from "lucide-react";
+import { Award, ChevronRight, Languages, Moon, Star, Sun, Wallet } from "lucide-react";
 import { Screen } from "../../components/Screen";
 import { Card } from "../../components/Card";
 import { Badge } from "../../components/Badge";
@@ -11,6 +11,7 @@ import { localeShortLabels, LOCALES, type Locale } from "../../i18n/strings";
 import { useMe, useUpdateLocaleMutation } from "../../api/queries";
 import { useAppStore } from "../../state/useAppStore";
 import { useEffectiveTheme } from "../../lib/useTheme";
+import { useCachedImage } from "../../lib/useCachedImage";
 import { useWalletProof, type WalletProofErrorCode } from "../../lib/useWalletProof";
 import type { Theme } from "../../lib/theme";
 import type { MeResponse } from "../../api/schemas";
@@ -20,10 +21,14 @@ function Avatar({ user }: { user: MeResponse["user"] }) {
   const initials =
     (user.firstName.charAt(0) + (user.lastName?.charAt(0) ?? "")).toUpperCase() ||
     "?";
-  if (user.photoUrl) {
+  // Cached client-side (IndexedDB, keyed by URL) so a fresh Telegram WebView
+  // session doesn't visibly re-fetch the avatar from the Telegram CDN on
+  // every reopen — see lib/useCachedImage.ts.
+  const cachedPhotoSrc = useCachedImage(user.photoUrl);
+  if (cachedPhotoSrc) {
     return (
       <img
-        src={user.photoUrl}
+        src={cachedPhotoSrc}
         alt=""
         className="h-16 w-16 rounded-full object-cover"
       />
@@ -36,10 +41,23 @@ function Avatar({ user }: { user: MeResponse["user"] }) {
   );
 }
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
+function Field({
+  label,
+  icon,
+  children,
+}: {
+  label: string;
+  icon: ReactNode;
+  children: ReactNode;
+}) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="text-sm font-medium text-text-muted">{label}</span>
+    <div className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+      <span className="flex items-center gap-2.5 text-sm font-medium text-text">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-text-muted">
+          {icon}
+        </span>
+        {label}
+      </span>
       {children}
     </div>
   );
@@ -204,32 +222,46 @@ export function ProfileScreen() {
       )}
 
       {/* Settings: language + theme */}
-      <Card className="mt-4 space-y-4 xs:mt-6">
-        <Field label={t.profile.language}>
-          <SegmentedControl<Locale>
-            ariaLabel={t.profile.language}
-            className="w-40"
-            options={LOCALES.map((loc) => ({
-              value: loc,
-              label: localeShortLabels[loc],
-            }))}
-            value={locale}
-            onChange={onSelectLocale}
-          />
-        </Field>
-        <Field label={t.profile.theme}>
-          <SegmentedControl<Theme>
-            ariaLabel={t.profile.theme}
-            className="w-28"
-            options={[
-              { value: "light", label: <Sun className="mx-auto h-4 w-4" /> },
-              { value: "dark", label: <Moon className="mx-auto h-4 w-4" /> },
-            ]}
-            value={theme}
-            onChange={(next) => setThemeOverride(next)}
-          />
-        </Field>
-      </Card>
+      <section className="mt-4 xs:mt-6">
+        <h2 className="mb-2 text-sm font-semibold text-text-muted">
+          {t.profile.preferences}
+        </h2>
+        <Card className="divide-y divide-border">
+          <Field label={t.profile.language} icon={<Languages className="h-4 w-4" />}>
+            <SegmentedControl<Locale>
+              ariaLabel={t.profile.language}
+              className="w-40"
+              options={LOCALES.map((loc) => ({
+                value: loc,
+                label: localeShortLabels[loc],
+              }))}
+              value={locale}
+              onChange={onSelectLocale}
+            />
+          </Field>
+          <Field
+            label={t.profile.theme}
+            icon={
+              theme === "dark" ? (
+                <Moon className="h-4 w-4" />
+              ) : (
+                <Sun className="h-4 w-4" />
+              )
+            }
+          >
+            <SegmentedControl<Theme>
+              ariaLabel={t.profile.theme}
+              className="w-28"
+              options={[
+                { value: "light", label: <Sun className="mx-auto h-4 w-4" /> },
+                { value: "dark", label: <Moon className="mx-auto h-4 w-4" /> },
+              ]}
+              value={theme}
+              onChange={(next) => setThemeOverride(next)}
+            />
+          </Field>
+        </Card>
+      </section>
 
       {/* Wallet + referral */}
       <section className="mt-4 space-y-3 xs:mt-6">
