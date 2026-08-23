@@ -38,7 +38,7 @@ export function TabBar() {
   };
 
   return (
-    <nav aria-label="Primary" className="safe-bottom fixed inset-x-0 bottom-0 z-20">
+    <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-20">
       <div className="content-col flex rounded-t-2xl border-t border-border bg-surface/95 backdrop-blur">
         {tabs.map(({ id, label, Icon }) => (
           <button
@@ -55,6 +55,9 @@ export function TabBar() {
           </button>
         ))}
       </div>
+      {/* Full-width strip exactly covering the safe-area inset (behind a device home indicator) —
+       *  same color as the bar above so it reads as a seamless continuation, not a bare gap. */}
+      <div className="safe-bottom bg-surface/95 backdrop-blur" />
     </nav>
   );
 }

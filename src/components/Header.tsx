@@ -14,7 +14,11 @@ import { WalletControl } from "./WalletControl";
  */
 export function Header() {
   return (
-    <header className="safe-top sticky top-0 z-30">
+    <header className="sticky top-0 z-30">
+      {/* Full-width strip exactly covering the safe-area inset (behind Telegram's own fullscreen
+       *  controls / a device notch) — kept full-bleed and the same color as the bar below so that
+       *  region reads as a seamless continuation of system chrome instead of a bare gap. */}
+      <div className="safe-top bg-surface/95 backdrop-blur" />
       {/* The bar itself (background/rounding/shadow) is content-col-width, not full-bleed — on a
        *  wide viewport it reads as a floating pill matching the page content's own max-width,
        *  instead of a full-width band with the content awkwardly clustered inside it. */}
