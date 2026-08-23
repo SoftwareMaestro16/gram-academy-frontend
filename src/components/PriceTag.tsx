@@ -1,5 +1,5 @@
 import { useT } from "../i18n/useT";
-import { format } from "../i18n/strings";
+import { StarsLabel } from "./StarsIcon";
 
 interface PriceTagProps {
   isPaid: boolean;
@@ -28,10 +28,10 @@ export function PriceTag({ isPaid, priceStars, discountedPriceStars }: PriceTagP
     return (
       <span className="flex items-center gap-1.5 text-sm">
         <span className="text-text-faint line-through">
-          {format(t.course.stars, { n: priceStars })}
+          <StarsLabel template={t.course.stars} vars={{ n: priceStars }} />
         </span>
         <span className="font-semibold text-text">
-          {format(t.course.stars, { n: discountedPriceStars })}
+          <StarsLabel template={t.course.stars} vars={{ n: discountedPriceStars }} />
         </span>
         <span className="rounded-full bg-success/15 px-1.5 py-0.5 text-[11px] font-semibold text-success">
           {t.course.discountBadge}
@@ -42,7 +42,7 @@ export function PriceTag({ isPaid, priceStars, discountedPriceStars }: PriceTagP
 
   return (
     <span className="text-sm font-semibold text-text">
-      {format(t.course.stars, { n: priceStars })}
+      <StarsLabel template={t.course.stars} vars={{ n: priceStars }} />
     </span>
   );
 }

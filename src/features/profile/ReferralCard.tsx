@@ -1,14 +1,51 @@
 import { useState, type ReactNode } from "react";
-import { Check, Copy, Share2, Users } from "lucide-react";
+import { Check, Copy, Info, Share2, Users } from "lucide-react";
 import { Card } from "../../components/Card";
 import { GramMark } from "../../components/Logo";
 import { Button } from "../../components/Button";
+import { Modal } from "../../components/Modal";
 import { ErrorCard, SkeletonList } from "../../components/StateViews";
 import { useT } from "../../i18n/useT";
 import { useReferralsQuery } from "../../api/referrals";
 import type { Referrals } from "../../api/schemas";
 import { impactHaptic, switchInlineQuery } from "../../lib/telegram";
 import { formatTon } from "../../lib/formatTon";
+
+function ReferralInfoButton() {
+  const { t } = useT();
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        aria-label={t.referral.infoTitle}
+        onClick={() => setOpen(true)}
+        className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-border text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text"
+      >
+        <Info className="h-3.5 w-3.5" />
+      </button>
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <h3 className="text-lg font-semibold text-text">{t.referral.infoTitle}</h3>
+        <p className="mt-1.5 text-sm text-text-muted">{t.referral.infoIntro}</p>
+
+        <div className="mt-4 space-y-3">
+          <div className="rounded-xl bg-surface-2 p-3">
+            <p className="text-sm font-semibold text-text">{t.referral.infoForYouTitle}</p>
+            <p className="mt-1 text-sm text-text-muted">{t.referral.infoForYouBody}</p>
+          </div>
+          <div className="rounded-xl bg-surface-2 p-3">
+            <p className="text-sm font-semibold text-text">{t.referral.infoForFriendTitle}</p>
+            <p className="mt-1 text-sm text-text-muted">{t.referral.infoForFriendBody}</p>
+          </div>
+        </div>
+
+        <Button variant="primary" fullWidth className="mt-5" onClick={() => setOpen(false)}>
+          {t.referral.infoClose}
+        </Button>
+      </Modal>
+    </>
+  );
+}
 
 function TeaserCard() {
   const { t } = useT();
@@ -19,6 +56,7 @@ function TeaserCard() {
           <Users className="h-4 w-4" />
         </span>
         {t.profile.referral}
+        <ReferralInfoButton />
       </div>
       <p className="mt-1 text-sm text-text-muted">{t.referral.teaser}</p>
     </Card>
@@ -73,6 +111,7 @@ function ConnectedReferralCard({ data }: { data: Referrals }) {
           <Users className="h-4 w-4" />
         </span>
         {t.profile.referral}
+        <ReferralInfoButton />
       </div>
 
       <div className="mt-3 truncate rounded-xl border border-border bg-surface-2 px-3 py-2 font-mono text-xs text-text">

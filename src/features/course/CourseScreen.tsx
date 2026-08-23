@@ -14,6 +14,7 @@ import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { MetaRow } from "../../components/MetaRow";
 import { PriceTag } from "../../components/PriceTag";
+import { StarsLabel } from "../../components/StarsIcon";
 import { ProgressBar } from "../../components/ProgressBar";
 import { RoadmapList } from "../../components/RoadmapList";
 import { ErrorCard, SkeletonList, Spinner } from "../../components/StateViews";
@@ -301,7 +302,7 @@ function PurchaseFlow({
     <div>
       <Button variant="primary" fullWidth disabled={pending} onClick={() => void handleBuy()}>
         {pending ? <Spinner className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
-        {format(t.course.buy, { n: course.discountedPriceStars })}
+        <StarsLabel template={t.course.buy} vars={{ n: course.discountedPriceStars }} />
       </Button>
       {phase.name === "opening" && (
         <p className="mt-2 text-center text-xs text-text-muted">{t.purchase.opening}</p>

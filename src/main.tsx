@@ -57,6 +57,16 @@ const manifestUrl =
 // TON Connect UI ships only en/ru — zh falls back to en (frontend-spec §2.2).
 const tonLanguage: Locales = getTelegramLocale() === "ru" ? "ru" : "en";
 
+// After connecting (or after signing the mint/purchase transaction), the wallet app should hand
+// control back to this Mini App instead of leaving the user stranded in Tonkeeper/etc.
+// `twaReturnUrl` (a Telegram deep link) is what TMA-aware wallets use; `returnStrategy: "back"` is
+// the fallback for wallets that aren't.
+const twaReturnUrl =
+  typeof import.meta.env.VITE_TELEGRAM_BOT_DEEPLINK === "string" &&
+  import.meta.env.VITE_TELEGRAM_BOT_DEEPLINK.length > 0
+    ? (import.meta.env.VITE_TELEGRAM_BOT_DEEPLINK as `${string}://${string}`)
+    : undefined;
+
 const rootEl = document.getElementById("root");
 if (!rootEl) {
   throw new Error("#root element not found");
@@ -70,6 +80,7 @@ createRoot(rootEl).render(
         uiPreferences={{ theme: THEME.DARK }}
         restoreConnection
         language={tonLanguage}
+        actionsConfiguration={{ returnStrategy: "back", ...(twaReturnUrl ? { twaReturnUrl } : {}) }}
       >
         <App />
       </TonConnectUIProvider>

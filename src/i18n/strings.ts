@@ -86,7 +86,6 @@ export interface ScreenMessages {
     certificatesHint: string;
     premium: string;
     discountReminder: string;
-    builtOn: string;
   };
   certificates: {
     title: string;
@@ -124,6 +123,13 @@ export interface ScreenMessages {
     walletsConnected: string;
     minted: string;
     earned: string;
+    infoTitle: string;
+    infoIntro: string;
+    infoForYouTitle: string;
+    infoForYouBody: string;
+    infoForFriendTitle: string;
+    infoForFriendBody: string;
+    infoClose: string;
   };
   outside: { title: string; body: string; button: string };
   error: { generic: string };
@@ -170,13 +176,13 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
     },
     course: {
       free: "Free",
-      stars: "{n} ⭐",
+      stars: "{n} {star}",
       lessonsHeading: "Lessons",
       quizzesHeading: "Quizzes",
       getCertificate: "Get certificate",
       certificatePending: "Awaiting on-chain confirmation",
       certificateMinted: "View certificate",
-      buy: "Buy for {n} ⭐",
+      buy: "Buy for {n} {star}",
       discountBadge: "-15%",
       completed: "Completed",
       quiz: "Quiz",
@@ -232,7 +238,6 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       certificatesHint: "See everything you've earned and unlocked",
       premium: "Premium",
       discountReminder: "You have -15% on paid courses",
-      builtOn: "Built on",
     },
     certificates: {
       title: "Certificates",
@@ -268,6 +273,14 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       walletsConnected: "Wallets connected",
       minted: "Certificates minted",
       earned: "GRAM earned",
+      infoTitle: "How referrals work",
+      infoIntro: "Share your link — when a friend joins Gram Academy through it, you both benefit.",
+      infoForYouTitle: "For you",
+      infoForYouBody:
+        "When your friend mints their first certificate, 0.05 TON is sent to your connected wallet automatically — no extra steps.",
+      infoForFriendTitle: "For your friend",
+      infoForFriendBody: "They get 15% off any paid course, for as long as they're on Gram Academy.",
+      infoClose: "Got it",
     },
     outside: {
       title: "Open in Telegram",
@@ -314,13 +327,13 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
     },
     course: {
       free: "Бесплатно",
-      stars: "{n} ⭐",
+      stars: "{n} {star}",
       lessonsHeading: "Уроки",
       quizzesHeading: "Тесты",
       getCertificate: "Получить сертификат",
       certificatePending: "Ждём подтверждение в сети",
       certificateMinted: "Открыть сертификат",
-      buy: "Купить за {n} ⭐",
+      buy: "Купить за {n} {star}",
       discountBadge: "-15%",
       completed: "Пройдено",
       quiz: "Тест",
@@ -377,7 +390,6 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       certificatesHint: "Все полученные и ещё не открытые сертификаты",
       premium: "Premium",
       discountReminder: "У тебя -15% на платные курсы",
-      builtOn: "Built on",
     },
     certificates: {
       title: "Сертификаты",
@@ -413,6 +425,14 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       walletsConnected: "Подключили кошелёк",
       minted: "Сминтили сертификат",
       earned: "Заработано GRAM",
+      infoTitle: "Как работает рефералка",
+      infoIntro: "Делись своей ссылкой — когда друг присоединится к Gram Academy по ней, выиграете оба.",
+      infoForYouTitle: "Тебе",
+      infoForYouBody:
+        "Когда твой друг сминтит свой первый сертификат, на твой подключённый кошелёк автоматически придёт 0.05 TON — без лишних действий.",
+      infoForFriendTitle: "Твоему другу",
+      infoForFriendBody: "Скидка -15% на любой платный курс, пока он на Gram Academy.",
+      infoClose: "Понятно",
     },
     outside: {
       title: "Откройте в Telegram",
@@ -420,7 +440,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       button: "Открыть бота",
     },
     error: { generic: "Что-то пошло не так." },
-    footer: { builtOn: "Built on", credit: "© {year} Gram Academy", channel: "Новости в Telegram" },
+    footer: { builtOn: "Собрано на", credit: "© {year} Gram Academy", channel: "Новости в Telegram" },
     mint: {
       walletRequired: "Подключите кошелёк в профиле, чтобы получить сертификат.",
       goToProfile: "В профиль",
@@ -459,13 +479,13 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
     },
     course: {
       free: "免费",
-      stars: "{n} ⭐",
+      stars: "{n} {star}",
       lessonsHeading: "课程",
       quizzesHeading: "测验",
       getCertificate: "领取证书",
       certificatePending: "等待链上确认",
       certificateMinted: "查看证书",
-      buy: "{n} ⭐ 购买",
+      buy: "{n} {star} 购买",
       discountBadge: "-15%",
       completed: "已完成",
       quiz: "测验",
@@ -520,7 +540,6 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       certificatesHint: "查看已获得和待解锁的所有证书",
       premium: "Premium",
       discountReminder: "付费课程可享 -15%",
-      builtOn: "Built on",
     },
     certificates: {
       title: "证书",
@@ -556,6 +575,13 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       walletsConnected: "已连接钱包",
       minted: "已铸造证书",
       earned: "已赚取 GRAM",
+      infoTitle: "推荐奖励如何运作",
+      infoIntro: "分享你的邀请链接——好友通过它加入 Gram Academy 后，你们都会获益。",
+      infoForYouTitle: "对你而言",
+      infoForYouBody: "好友首次铸造证书后，0.05 TON 会自动发送到你已连接的钱包——无需额外操作。",
+      infoForFriendTitle: "对好友而言",
+      infoForFriendBody: "只要还在 Gram Academy 学习，任意付费课程都可享 -15% 折扣。",
+      infoClose: "知道了",
     },
     outside: {
       title: "在 Telegram 中打开",
@@ -563,7 +589,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       button: "打开机器人",
     },
     error: { generic: "出错了。" },
-    footer: { builtOn: "Built on", credit: "© {year} Gram Academy", channel: "Telegram 频道" },
+    footer: { builtOn: "基于", credit: "© {year} Gram Academy", channel: "Telegram 频道" },
     mint: {
       walletRequired: "请在个人中心连接钱包以领取证书。",
       goToProfile: "前往个人中心",
