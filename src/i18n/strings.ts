@@ -24,6 +24,9 @@ export interface ScreenMessages {
     heroTitle: string;
     heroSubtitle: string;
     heroCta: string;
+    /** "What is Gram Academy" intro section, right under the hero. */
+    introTitle: string;
+    introBody: string;
     /** Value-prop section 1: "Learn TON from Zero" */
     learnTitle: string;
     learnBody: string;
@@ -35,6 +38,25 @@ export interface ScreenMessages {
     /** Value-prop section 3: "Built for Telegram" */
     telegramTitle: string;
     telegramBody: string;
+    /** "How it works" 4-step vertical process. */
+    howTitle: string;
+    howBody: string;
+    howSteps: [
+      { title: string; body: string },
+      { title: string; body: string },
+      { title: string; body: string },
+      { title: string; body: string },
+    ];
+    /** Curriculum-breadth section: the 10 real section titles as a chip cloud. */
+    curriculumTitle: string;
+    curriculumBody: string;
+    curriculumTopics: [
+      string, string, string, string, string,
+      string, string, string, string, string,
+    ];
+    /** Three-language accessibility section. */
+    languagesTitle: string;
+    languagesBody: string;
   };
   /** Learning catalog tab + section-detail chrome. */
   learning: {
@@ -228,6 +250,9 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       heroSubtitle:
         "Structured courses on TON — from beginner to architect — with on-chain certificates to prove what you know.",
       heroCta: "Start learning",
+      introTitle: "TON education, built right into Telegram",
+      introBody:
+        "Gram Academy is a Telegram Mini App that teaches you TON — the blockchain behind Telegram's own Stars economy — through short, plain-language lessons and quizzes. No separate app to install, no jargon left unexplained. Finish a course, and you can mint an on-chain certificate that proves it.",
       learnTitle: "Learn TON from Zero",
       learnBody:
         "We explain complex TON topics in simple, engaging language. Structured courses take you from beginner to architect, step by step.",
@@ -238,6 +263,44 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       telegramTitle: "Built for Telegram",
       telegramBody:
         "Learn right inside Telegram as a seamless Mini App. Share your progress and invite friends without ever leaving the chat.",
+      howTitle: "How it works",
+      howBody: "Four steps, start to finish.",
+      howSteps: [
+        {
+          title: "Read",
+          body: "Short lessons, plain language first — technical detail only where it actually helps.",
+        },
+        {
+          title: "Quiz",
+          body: "A short quiz closes out every course. Pass it, and the course counts as complete.",
+        },
+        {
+          title: "Mint",
+          body: "Completed a course? Mint a soulbound certificate on TON — permanent, verifiable, yours.",
+        },
+        {
+          title: "Share",
+          body: "Invite friends with your referral link — they get a discount, you earn TON when they mint.",
+        },
+      ],
+      curriculumTitle: "From your first wallet to protocol internals",
+      curriculumBody:
+        "Ten sections take you as far as you want to go — start with the basics, or jump straight into whatever you're curious about.",
+      curriculumTopics: [
+        "TON for Newcomers",
+        "Tokens, NFTs & Digital Assets",
+        "Fragment, Telegram & Digital Commerce",
+        "Trading, DeFi & Earning",
+        "Crypto Security & Scam Defense",
+        "Validators & Network Consensus",
+        "Developer Foundations",
+        "Advanced Contracts & Token Standards",
+        "Architecture Deep Dive",
+        "Protocol Engineering",
+      ],
+      languagesTitle: "Read it in your language",
+      languagesBody:
+        "Every lesson, quiz, and certificate is available in English, Russian, and Chinese — switch anytime from your profile.",
     },
     learning: {
       tab: "Learning",
@@ -428,6 +491,9 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       heroSubtitle:
         "Структурированные курсы по TON — от новичка до архитектора — с сертификатами в блокчейне, подтверждающими твои знания.",
       heroCta: "Начать учиться",
+      introTitle: "Обучение TON — прямо внутри Telegram",
+      introBody:
+        "Gram Academy — это мини-приложение в Telegram, которое учит вас TON — блокчейну, на котором построена экономика Stars самого Telegram, — через короткие уроки на простом языке и тесты. Не нужно ставить отдельное приложение, никакого непонятного жаргона. Пройдите курс — и сможете заминтить ончейн-сертификат, который это подтверждает.",
       learnTitle: "Изучай TON с нуля",
       learnBody:
         "Объясняем сложные темы TON простым и увлекательным языком. Структурированные курсы проведут тебя от новичка до архитектора, шаг за шагом.",
@@ -438,6 +504,44 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       telegramTitle: "Создано для Telegram",
       telegramBody:
         "Учись прямо внутри Telegram — как нативное мини-приложение. Делись прогрессом и приглашай друзей, не покидая чат.",
+      howTitle: "Как это работает",
+      howBody: "Четыре шага от начала до конца.",
+      howSteps: [
+        {
+          title: "Читайте",
+          body: "Короткие уроки, сначала простым языком — техническая деталь только там, где она правда нужна.",
+        },
+        {
+          title: "Тест",
+          body: "Каждый курс завершается коротким тестом. Прошли — курс засчитан как пройденный.",
+        },
+        {
+          title: "Минт",
+          body: "Прошли курс? Заминтите soulbound-сертификат на TON — постоянный, проверяемый, ваш.",
+        },
+        {
+          title: "Поделитесь",
+          body: "Пригласите друзей по реферальной ссылке — они получат скидку, а вы заработаете TON, когда они заминтят сертификат.",
+        },
+      ],
+      curriculumTitle: "От первого кошелька до внутренностей протокола",
+      curriculumBody:
+        "Десять разделов ведут так далеко, как вы захотите — начните с основ или сразу переходите к тому, что интересно именно вам.",
+      curriculumTopics: [
+        "TON для новичков",
+        "Токены, NFT и цифровые активы",
+        "Fragment, Telegram и цифровая коммерция",
+        "Трейдинг, DeFi и заработок",
+        "Крипто-безопасность и защита от мошенников",
+        "Валидаторы и сетевой консенсус",
+        "Основы для разработчиков",
+        "Продвинутые контракты и стандарты токенов",
+        "Глубокое погружение в архитектуру",
+        "Инженерия протокола",
+      ],
+      languagesTitle: "Читайте на своём языке",
+      languagesBody:
+        "Каждый урок, тест и сертификат доступны на английском, русском и китайском — переключайтесь в любой момент в профиле.",
     },
     learning: {
       tab: "Обучение",
@@ -629,6 +733,9 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       heroSubtitle:
         "系统化的 TON 课程——从入门到架构师——链上证书证明你的所学。",
       heroCta: "开始学习",
+      introTitle: "TON 教育，就在 Telegram 内",
+      introBody:
+        "Gram Academy 是一个 Telegram 小程序，通过简短、通俗易懂的课程和测验教你了解 TON——Telegram 自己的 Stars 经济所基于的区块链。不需要安装另一个应用，也不会留下没解释清楚的术语。完成一门课程后，你还可以铸造一枚链上证书来证明这一点。",
       learnTitle: "从零学习 TON",
       learnBody:
         "用简单易懂的语言讲解复杂的 TON 主题。系统化课程带你从入门到精通，循序渐进。",
@@ -639,6 +746,44 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       telegramTitle: "专为 Telegram 打造",
       telegramBody:
         "作为无缝小程序，直接在 Telegram 内学习。分享进度、邀请好友，无需离开聊天。",
+      howTitle: "它是如何运作的",
+      howBody: "从开始到结束，一共四步。",
+      howSteps: [
+        {
+          title: "阅读",
+          body: "简短课程，先用通俗的语言讲清楚——只有在真正有帮助的地方才深入技术细节。",
+        },
+        {
+          title: "测验",
+          body: "每门课程都以一个简短的测验收尾。通过测验，这门课程就算完成了。",
+        },
+        {
+          title: "铸造",
+          body: "完成了一门课程？在 TON 上铸造一枚灵魂绑定证书——永久保存、可验证，属于你自己。",
+        },
+        {
+          title: "分享",
+          body: "用你的推荐链接邀请朋友——他们能获得折扣，而你在他们铸造证书时会获得 TON 奖励。",
+        },
+      ],
+      curriculumTitle: "从你的第一个钱包，到协议内部",
+      curriculumBody:
+        "十个板块，带你走多远都可以——从基础开始，或者直接跳到你感兴趣的内容。",
+      curriculumTopics: [
+        "TON 新手入门",
+        "代币、NFT 与数字资产",
+        "Fragment、Telegram 与数字商业",
+        "交易、DeFi 与收益",
+        "加密安全与防骗指南",
+        "验证者与网络共识",
+        "开发者基础",
+        "高级合约与代币标准",
+        "架构深度解析",
+        "协议工程",
+      ],
+      languagesTitle: "用你的语言阅读",
+      languagesBody:
+        "每一节课、每一个测验、每一张证书都提供英文、俄文和中文版本——随时可以在个人资料里切换。",
     },
     learning: {
       tab: "学习",
