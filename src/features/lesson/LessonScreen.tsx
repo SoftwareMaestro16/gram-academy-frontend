@@ -264,6 +264,17 @@ export function LessonScreen({
     setCompleteError(false);
   }, [lessonId]);
 
+  // Same component instance, new lesson: without this, stepping to a shorter
+  // lesson while scrolled deep into the previous one left the page's scroll
+  // position wherever it was — which could land the sticky aside (and its own
+  // sticky "Contents" heading, stuck at top:0 *within* the aside) in a
+  // transient state where it hadn't reached its normal-flow position yet,
+  // rendering it up over the site Header instead of below it. A real reader
+  // also just expects a new lesson to start at the top regardless.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [lessonId]);
+
   const index = course?.lessons.findIndex((l) => l.id === lessonId) ?? -1;
   const lesson = index >= 0 ? course?.lessons[index] : undefined;
 
