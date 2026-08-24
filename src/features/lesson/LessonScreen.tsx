@@ -371,7 +371,7 @@ export function LessonScreen({
   // should. The solid background matters here too: without it, list items
   // scrolling underneath would show through.
   const contentsHeading = (
-    <p className="sticky top-0 z-10 mb-2 bg-bg px-3 pb-2 pt-1 text-[13px] font-semibold uppercase tracking-wide text-text-muted">
+    <p className="sticky top-0 z-10 mb-2 bg-bg px-3 pb-3 pt-3 text-[13px] font-semibold uppercase tracking-wide text-text-muted">
       {t.lesson.contents}
     </p>
   );
