@@ -22,6 +22,7 @@ import { cn } from "../../lib/cn";
 import { notificationHaptic, selectionHaptic } from "../../lib/telegram";
 import { prefersReducedMotion } from "../../lib/motion";
 import { parseLessonBody, sectionDomId, type LessonSection } from "./lessonSections";
+import { getScrollContainer } from "../../lib/scroll";
 
 // Indent the in-lesson "On this page" list by heading depth so nested sections
 // read as a small outline.
@@ -86,17 +87,18 @@ function useActiveSectionId(sectionIds: string[]): string | null {
     // previous section stays highlighted forever. Force the last section
     // active once the reader has scrolled essentially to the bottom.
     const lastId = sectionIds[sectionIds.length - 1];
+    const scrollEl = getScrollContainer();
     const handleScroll = () => {
       const scrolledToBottom =
-        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 24;
+        scrollEl.clientHeight + scrollEl.scrollTop >= scrollEl.scrollHeight - 24;
       if (scrolledToBottom && lastId) setActiveId(lastId);
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    scrollEl.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
     return () => {
       observer.disconnect();
-      window.removeEventListener("scroll", handleScroll);
+      scrollEl.removeEventListener("scroll", handleScroll);
     };
   }, [sectionIds]);
 
@@ -272,7 +274,7 @@ export function LessonScreen({
   // rendering it up over the site Header instead of below it. A real reader
   // also just expects a new lesson to start at the top regardless.
   useEffect(() => {
-    window.scrollTo(0, 0);
+    getScrollContainer().scrollTo(0, 0);
   }, [lessonId]);
 
   const index = course?.lessons.findIndex((l) => l.id === lessonId) ?? -1;

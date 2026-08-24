@@ -64,14 +64,29 @@ export function parseLessonBody(body: string): ParsedLessonBody {
     }
   };
 
+  // Every lesson body opens with `# Title` (SEED-FORMAT.md) — the screen
+  // rendering this already shows that same title as its own <h1> above the
+  // article, so re-rendering it here would just duplicate it. Absorb a
+  // *leading* H1 into the preamble instead of turning it into a section: its
+  // heading line is dropped, but any text right after it (an intro sentence
+  // before the next real heading) still renders normally as preamble content.
+  let sawFirstHeading = false;
+
   for (const line of lines) {
     if (FENCE_RE.test(line)) inFence = !inFence;
 
     const match = inFence ? null : HEADING_RE.exec(line);
     if (match) {
-      flush();
       const level = match[1]?.length ?? 1;
       const title = (match[2] ?? "").trim();
+
+      if (!sawFirstHeading && level === 1) {
+        sawFirstHeading = true;
+        continue;
+      }
+      sawFirstHeading = true;
+
+      flush();
       let id = slugify(title, sections.length);
       const seen = usedIds.get(id);
       if (seen !== undefined) {

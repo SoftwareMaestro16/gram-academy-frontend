@@ -68,7 +68,7 @@ const components: Components = {
 
 export function LessonMarkdown({ children }: { children: string }) {
   return (
-    <div className="reading">
+    <div className="reading reading-lesson">
       <ReactMarkdown skipHtml remarkPlugins={[remarkGfm]} components={components}>
         {children}
       </ReactMarkdown>
