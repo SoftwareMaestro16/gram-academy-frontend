@@ -16,6 +16,12 @@ interface ScreenProps {
   /** Reserve space at the bottom for the tab bar (mobile only — the tab bar
    *  becomes a top nav at ≥600px, so no bottom clearance is needed there). */
   withTabBar?: boolean | undefined;
+  /** Use the wider `.content-col-lesson` column instead of the standard
+   *  `.content-col`. Only the lesson screen needs this — it's the one screen
+   *  with a genuine 2-column layout (sidebar + reading content), and the
+   *  standard column caps squeeze that reading column below its own
+   *  typography target once the sidebar width is subtracted. */
+  wide?: boolean | undefined;
 }
 
 export function Screen({
@@ -24,10 +30,16 @@ export function Screen({
   action,
   children,
   withTabBar,
+  wide,
 }: ScreenProps) {
   const { c } = useT();
   return (
-    <div className="content-col flex min-h-full w-full flex-col">
+    <div
+      className={cn(
+        "flex min-h-full w-full flex-col",
+        wide ? "content-col-lesson" : "content-col",
+      )}
+    >
       {(title || onBack || action) && (
         // top-14 clears the persistent site Header (Header.tsx: min-h-11 + py-1.5 = 56px); at sm:
         // and up Header also gets a 12px top margin (sm:mt-3) for its floating-card look, so this

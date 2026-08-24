@@ -79,7 +79,25 @@ function useActiveSectionId(sectionIds: string[]): string | null {
       { rootMargin: "-112px 0px -70% 0px", threshold: 0 },
     );
     elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+
+    // A short final section can sit at the bottom of the page without ever
+    // crossing the activation line above — once the page hits (or nears) its
+    // max scroll, the observer simply has nothing left to fire on, so the
+    // previous section stays highlighted forever. Force the last section
+    // active once the reader has scrolled essentially to the bottom.
+    const lastId = sectionIds[sectionIds.length - 1];
+    const handleScroll = () => {
+      const scrolledToBottom =
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 24;
+      if (scrolledToBottom && lastId) setActiveId(lastId);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, [sectionIds]);
 
   return activeId;
@@ -128,26 +146,29 @@ function FeedbackButton({
   onClick,
   icon,
   label,
+  edge,
 }: {
   active: boolean;
   onClick: () => void;
   icon: ReactNode;
+  /** Screen-reader-only — the rectangle shows icons alone, no visible text. */
   label: string;
+  edge: "left" | "right";
 }) {
   return (
     <button
       type="button"
       aria-pressed={active}
+      aria-label={label}
+      title={label}
       onClick={onClick}
       className={cn(
-        "inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors duration-150",
-        active
-          ? "border-accent bg-accent-soft text-accent"
-          : "border-border bg-surface text-text-muted hover:bg-surface-2 hover:text-text",
+        "flex min-h-11 flex-1 items-center justify-center transition-colors duration-150",
+        edge === "left" ? "rounded-l-xl" : "rounded-r-xl",
+        active ? "bg-accent-soft text-accent" : "text-text-muted hover:bg-surface-2 hover:text-text",
       )}
     >
       {icon}
-      {label}
     </button>
   );
 }
@@ -184,18 +205,20 @@ function WasThisHelpful({
   return (
     <div className="flex flex-col items-center gap-2 text-center">
       <p className="text-sm text-text-muted">{t.lesson.helpfulQuestion}</p>
-      <div className="flex gap-2">
+      <div className="flex w-28 divide-x divide-border overflow-hidden rounded-xl border border-border bg-surface">
         <FeedbackButton
           active={choice === true}
           onClick={() => choose(true)}
           icon={<ThumbsUp className="h-4 w-4" />}
           label={t.lesson.helpfulYes}
+          edge="left"
         />
         <FeedbackButton
           active={choice === false}
           onClick={() => choose(false)}
           icon={<ThumbsDown className="h-4 w-4" />}
           label={t.lesson.helpfulNo}
+          edge="right"
         />
       </div>
     </div>
@@ -232,6 +255,15 @@ export function LessonScreen({
   const [justCompleted, setJustCompleted] = useState(false);
   const [completeError, setCompleteError] = useState(false);
 
+  // `replaceView` swaps `lessonId` without unmounting this component, so
+  // these transient flags would otherwise leak into the next lesson — e.g.
+  // `justCompleted` staying true would leave the Next button permanently
+  // disabled with a stale checkmark on whatever lesson loads afterward.
+  useEffect(() => {
+    setJustCompleted(false);
+    setCompleteError(false);
+  }, [lessonId]);
+
   const index = course?.lessons.findIndex((l) => l.id === lessonId) ?? -1;
   const lesson = index >= 0 ? course?.lessons[index] : undefined;
 
@@ -245,21 +277,21 @@ export function LessonScreen({
 
   if (isPending) {
     return (
-      <Screen onBack={goBack}>
+      <Screen onBack={goBack} wide>
         <SkeletonList rows={5} />
       </Screen>
     );
   }
   if (isError || !course) {
     return (
-      <Screen onBack={goBack}>
+      <Screen onBack={goBack} wide>
         <ErrorCard onRetry={() => void refetch()} />
       </Screen>
     );
   }
   if (!lesson) {
     return (
-      <Screen onBack={goBack}>
+      <Screen onBack={goBack} wide>
         <ErrorCard onRetry={goBack} />
       </Screen>
     );
@@ -326,7 +358,7 @@ export function LessonScreen({
   );
 
   return (
-    <Screen onBack={goBack}>
+    <Screen onBack={goBack} wide>
       <div className="md:grid md:grid-cols-[240px_1fr] md:gap-8 lg:grid-cols-[280px_1fr] lg:gap-10">
         {/* ≥960px: persistent sticky rail with the course TOC and, below it, the
            in-lesson "On this page" nav. Below md the two become collapsibles in

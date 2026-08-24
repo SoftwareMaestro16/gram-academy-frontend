@@ -176,6 +176,36 @@ body {
   }
 }
 
+/* Wider column for the lesson screen only — it's the one screen with a
+   genuine 2-column layout (sidebar + reading content). The plain `.content-col`
+   caps are sized for single-column screens; reused here they'd squeeze the
+   `.reading` column (max-width: 66ch, ~640px) down well below its own
+   typography target once the 240-280px sidebar + gap is subtracted. */
+.content-col-lesson {
+  margin-inline: auto;
+  width: 100%;
+}
+@media (min-width: 600px) {
+  .content-col-lesson {
+    max-width: 640px;
+  }
+}
+@media (min-width: 768px) {
+  .content-col-lesson {
+    max-width: 900px;
+  }
+}
+@media (min-width: 1024px) {
+  .content-col-lesson {
+    max-width: 1040px;
+  }
+}
+@media (min-width: 1280px) {
+  .content-col-lesson {
+    max-width: 1140px;
+  }
+}
+
 /* Reading typography for lesson markdown (DESIGN.md §Typography, §Lesson). */
 .reading {
   max-width: 66ch;
