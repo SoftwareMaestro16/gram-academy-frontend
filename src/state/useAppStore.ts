@@ -80,10 +80,14 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: "gram-academy.app",
-      // Persist ONLY locale + theme override, never navigation state (spec §3).
+      // Persist the current view + its back-stack too (deliberate change from
+      // spec §3's original "navigation never persists") — a reload used to
+      // always drop the reader back on Home instead of wherever they were.
       partialize: (state) => ({
         locale: state.locale,
         themeOverride: state.themeOverride,
+        view: state.view,
+        history: state.history,
       }),
     },
   ),

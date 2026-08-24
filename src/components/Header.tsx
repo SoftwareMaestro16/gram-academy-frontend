@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from "react";
 import { Logo } from "./Logo";
 import { WalletControl } from "./WalletControl";
 
@@ -13,8 +14,28 @@ import { WalletControl } from "./WalletControl";
  * from Profile's language/theme card, so nothing is lost.
  */
 export function Header() {
+  const ref = useRef<HTMLElement>(null);
+
+  // Publishes the real rendered height as `--header-h` so any sticky bar that
+  // needs to sit right below Header (Screen's back-button row) can position
+  // itself off the actual box instead of a hardcoded guess — a guess that's
+  // wrong whenever the safe-area inset, text wrapping, or the sm:mt-3
+  // floating-card margin changes Header's true height, leaving either a gap
+  // (content peeking through) or an overlap.
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const publish = () => {
+      document.documentElement.style.setProperty("--header-h", `${el.offsetHeight}px`);
+    };
+    publish();
+    const observer = new ResizeObserver(publish);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <header className="sticky top-0 z-30">
+    <header ref={ref} className="sticky top-0 z-30">
       {/* content-col-width outer carries the safe-area padding AND the background/rounding, so the
        *  notch-safe inset and the header row below it are the same narrow shape (not a full-width
        *  strip sitting above a narrower pill). The row's own height is fixed on the INNER div, not

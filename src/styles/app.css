@@ -151,6 +151,16 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* Real measured height of the persistent site Header (Header.tsx sets this via
+   ResizeObserver). Screen's own sticky sub-header sticks right below it via
+   `top: var(--header-h)` — driven by the actual box, not a hardcoded guess, so
+   it can never drift out of sync with Header's true height (safe-area inset,
+   text wrapping, the sm:mt-3 floating-card margin, etc. all included). The
+   fallback below only matters for the one frame before JS measures it. */
+:root {
+  --header-h: 56px;
+}
+
 /* Centered content column that grows by breakpoint instead of stretching
    edge-to-edge on larger screens (DESIGN.md §Responsive breakpoints). Below
    600px it's full-width (the baseline mobile layout); from 600px up it caps
@@ -268,6 +278,25 @@ body {
 .reading img {
   max-width: 100%;
   border-radius: 12px;
+}
+.reading table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+.reading th,
+.reading td {
+  padding: 0.6em 0.9em;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.reading th {
+  background: var(--surface-2);
+  font-weight: 600;
+}
+.reading tr:last-child td {
+  border-bottom: none;
 }
 .reading blockquote {
   border-left: 3px solid var(--border);

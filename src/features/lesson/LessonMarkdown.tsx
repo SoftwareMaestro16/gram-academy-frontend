@@ -1,4 +1,5 @@
 import ReactMarkdown, { type Components } from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 /**
  * Lesson body renderer. Same reading typography as the shared `Markdown`
@@ -12,6 +13,15 @@ import ReactMarkdown, { type Components } from "react-markdown";
  * disabled (`skipHtml`).
  */
 const components: Components = {
+  // GFM tables can be wider than the reading column on narrow screens —
+  // scroll the table itself instead of letting it force the whole page wide.
+  table({ children }) {
+    return (
+      <div className="my-6 overflow-x-auto rounded-xl border border-border">
+        <table>{children}</table>
+      </div>
+    );
+  },
   img({ src, alt, title }) {
     const caption = (alt ?? "").trim();
     return (
@@ -36,7 +46,7 @@ const components: Components = {
 export function LessonMarkdown({ children }: { children: string }) {
   return (
     <div className="reading">
-      <ReactMarkdown skipHtml components={components}>
+      <ReactMarkdown skipHtml remarkPlugins={[remarkGfm]} components={components}>
         {children}
       </ReactMarkdown>
     </div>

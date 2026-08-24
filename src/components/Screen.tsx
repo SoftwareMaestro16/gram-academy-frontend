@@ -41,10 +41,13 @@ export function Screen({
       )}
     >
       {(title || onBack || action) && (
-        // top-14 clears the persistent site Header (Header.tsx: min-h-11 + py-1.5 = 56px); at sm:
-        // and up Header also gets a 12px top margin (sm:mt-3) for its floating-card look, so this
-        // needs the extra 12px there too. Both are `sticky top:*` siblings stacking in DOM order.
-        <header className="sticky top-14 z-10 border-b border-border bg-bg/90 backdrop-blur sm:top-[68px]">
+        // Sticks right below the persistent site Header via `--header-h`
+        // (Header.tsx measures itself and publishes the real height), so this
+        // can never drift out of sync with Header's actual box.
+        <header
+          className="sticky z-10 border-b border-border bg-bg/90 backdrop-blur"
+          style={{ top: "var(--header-h)" }}
+        >
           <div className="flex h-14 items-center gap-2 px-3 xs:px-4">
             {onBack && (
               <button
