@@ -18,16 +18,19 @@ import {
  * resolving.
  */
 
-/** POST /v1/certificates/mint-intent { courseSlug } -> MintIntentDto.
- *  Idempotent while a non-expired RESERVED record exists for the course (same
+/** POST /v1/certificates/mint-intent -> MintIntentDto.
+ *  Accepts `certGroupSlug` (new cert-group model) or the legacy `courseSlug`.
+ *  Idempotent while a non-expired RESERVED record exists (same
  *  serial/signature returned); 403 course_not_completed, 409 already_minted,
  *  409 wallet_required. */
-export function requestMintIntent(courseSlug: string): Promise<MintIntentDto> {
-  return postJson(
-    "/v1/certificates/mint-intent",
-    { courseSlug },
-    mintIntentSchema,
-  );
+export function requestMintIntent(
+  slugOrOpts: string | { certGroupSlug: string },
+): Promise<MintIntentDto> {
+  const body =
+    typeof slugOrOpts === "string"
+      ? { courseSlug: slugOrOpts }
+      : { certGroupSlug: slugOrOpts.certGroupSlug };
+  return postJson("/v1/certificates/mint-intent", body, mintIntentSchema);
 }
 
 /** GET /v1/certificates/my — every mint reservation/record on the caller's

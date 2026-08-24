@@ -129,9 +129,13 @@ export function WalletControl({ className }: { className?: string }) {
             <span className="font-mono text-sm text-text">
               {shortenAddress(wallet.address)}
             </span>
-            <Badge tone={wallet.network === "mainnet" ? "accent" : "neutral"}>
-              {wallet.network === "mainnet" ? t.wallet.mainnet : t.wallet.testnet}
-            </Badge>
+            {/* Only show the network badge on testnet — on mainnet it's the
+                default and not worth badging (reduces noise in production). */}
+            {import.meta.env.VITE_TON_NETWORK !== "mainnet" && (
+              <Badge tone="neutral">
+                {wallet.network === "mainnet" ? t.wallet.mainnet : t.wallet.testnet}
+              </Badge>
+            )}
           </div>
 
           <div className="mt-4">

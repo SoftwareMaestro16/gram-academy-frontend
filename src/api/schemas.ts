@@ -96,6 +96,23 @@ export type Referrals = z.infer<typeof referralsSchema>;
 export const certificateStatusSchema = z.enum(["none", "reserved", "minted"]);
 export type CertificateStatus = z.infer<typeof certificateStatusSchema>;
 
+// --- Certificate groups (cert-group model) ---------------------------------
+//
+// A CertGroup bundles several courses: completing `minCoursesRequired` of
+// its `requiredCourseSlugs` unlocks the right to mint the group's SBT
+// certificate. `completedCourses` is the caller's current progress.
+
+export const certGroupSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  title: z.string(),
+  description: z.string().optional(),
+  minCoursesRequired: z.number(),
+  requiredCourseSlugs: z.array(z.string()),
+  completedCourses: z.number(),
+});
+export type CertGroup = z.infer<typeof certGroupSchema>;
+
 // --- Sections & course summaries (CONTENT-DTO.md: GET /v1/sections) ---------
 //
 // All fields are guaranteed by the server. Prices arrive pre-computed:
@@ -131,6 +148,9 @@ export const sectionSchema = z.object({
   title: z.string(),
   description: z.string(),
   courses: z.array(courseSummarySchema),
+  // Additive, optional: cert groups whose required courses belong to this
+  // section, so the UI can show "complete X more to earn [cert]".
+  certGroups: z.array(certGroupSchema).optional(),
 });
 export type Section = z.infer<typeof sectionSchema>;
 
@@ -211,6 +231,9 @@ export const courseDetailSchema = z.object({
   //    re-asking.
   estimatedMinutes: z.number().optional(),
   myRating: z.number().nullable().optional(),
+  // Additive, optional: cert groups this course contributes to, so the
+  // course page can show progress toward each ("X more courses to go").
+  certGroups: z.array(certGroupSchema).optional(),
 });
 export type CourseDetail = z.infer<typeof courseDetailSchema>;
 
@@ -305,7 +328,10 @@ export type CertificateMintStatus = z.infer<typeof certificateMintStatusSchema>;
 
 export const certificateMintSchema = z.object({
   id: z.string(),
-  courseId: z.string(),
+  /** @deprecated Migrating to certGroupId — kept optional during transition. */
+  courseId: z.string().optional(),
+  certGroupId: z.string().optional(),
+  certGroupSlug: z.string().optional(),
   serial: z.number(),
   tokenName: z.string(),
   status: certificateMintStatusSchema,

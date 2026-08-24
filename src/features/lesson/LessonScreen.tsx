@@ -42,30 +42,83 @@ function scrollToSection(id: string) {
   });
 }
 
+/** Tracks which in-lesson section is currently in view as the reader scrolls,
+ *  so "On this page" can highlight it (screenshot reference: a left accent
+ *  bar + accent text on the active entry). Uses an IntersectionObserver with
+ *  a thin activation line near the top of the viewport — a section becomes
+ *  active once its heading crosses that line, matching the `scroll-mt-32`
+ *  offset the jump-to-section behavior already uses. Re-runs whenever the
+ *  lesson changes (new section ids -> new DOM nodes to observe). */
+function useActiveSectionId(sectionIds: string[]): string | null {
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setActiveId(sectionIds[0] ?? null);
+    if (sectionIds.length === 0) return;
+
+    const idByDomId = new Map(sectionIds.map((id) => [sectionDomId(id), id]));
+    const elements = sectionIds
+      .map((id) => document.getElementById(sectionDomId(id)))
+      .filter((el): el is HTMLElement => el !== null);
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Multiple sections can cross the activation line in one frame (fast
+        // scroll/jump); prefer the one closest to the top of the viewport so
+        // the highlight matches what the reader is actually looking at.
+        const intersecting = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        const top = intersecting[0];
+        if (top) {
+          const id = idByDomId.get(top.target.id);
+          if (id) setActiveId(id);
+        }
+      },
+      { rootMargin: "-112px 0px -70% 0px", threshold: 0 },
+    );
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [sectionIds]);
+
+  return activeId;
+}
+
 /** In-lesson section jump list ("On this page"), derived from the body's
- *  headings. Generic — works for any lesson. */
+ *  headings. Generic — works for any lesson. Highlights the section currently
+ *  in view via `activeId`. */
 function OnThisPage({
   sections,
+  activeId,
   onJump,
 }: {
   sections: LessonSection[];
+  activeId: string | null;
   onJump: (id: string) => void;
 }) {
   return (
-    <nav className="space-y-0.5">
-      {sections.map((section) => (
-        <button
-          key={section.id}
-          type="button"
-          onClick={() => onJump(section.id)}
-          className={cn(
-            "block min-h-9 w-full truncate rounded-lg py-1.5 pr-3 text-left text-sm text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text",
-            INDENT_BY_LEVEL[section.level] ?? "pl-3",
-          )}
-        >
-          {section.title}
-        </button>
-      ))}
+    <nav className="space-y-0.5 border-l border-border">
+      {sections.map((section) => {
+        const active = section.id === activeId;
+        return (
+          <button
+            key={section.id}
+            type="button"
+            aria-current={active ? "true" : undefined}
+            onClick={() => onJump(section.id)}
+            className={cn(
+              "-ml-px block min-h-9 w-full truncate border-l-2 py-1.5 pr-3 text-left text-sm transition-colors duration-150",
+              active
+                ? "border-accent text-accent"
+                : "border-transparent text-text-muted hover:bg-surface-2 hover:text-text",
+              INDENT_BY_LEVEL[section.level] ?? "pl-3",
+            )}
+          >
+            {section.title}
+          </button>
+        );
+      })}
     </nav>
   );
 }
@@ -187,6 +240,8 @@ export function LessonScreen({
   const parsed = useMemo(() => parseLessonBody(lesson?.body ?? ""), [lesson?.body]);
   const headings = parsed.sections.map((section) => section.heading);
   const hasSectionNav = headings.length > 1;
+  const sectionIds = useMemo(() => parsed.sections.map((s) => s.heading.id), [parsed]);
+  const activeSectionId = useActiveSectionId(sectionIds);
 
   if (isPending) {
     return (
@@ -290,7 +345,7 @@ export function LessonScreen({
               <p className="mb-2 mt-6 px-3 text-[13px] font-semibold uppercase tracking-wide text-text-muted">
                 {t.lesson.onThisPage}
               </p>
-              <OnThisPage sections={headings} onJump={scrollToSection} />
+              <OnThisPage sections={headings} activeId={activeSectionId} onJump={scrollToSection} />
             </>
           )}
         </aside>
@@ -316,7 +371,7 @@ export function LessonScreen({
                 <ChevronDown className="h-4 w-4 transition-transform duration-150 group-open:rotate-180" />
               </summary>
               <div className="px-2 pb-2">
-                <OnThisPage sections={headings} onJump={scrollToSection} />
+                <OnThisPage sections={headings} activeId={activeSectionId} onJump={scrollToSection} />
               </div>
             </details>
           )}

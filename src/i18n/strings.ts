@@ -24,18 +24,15 @@ export interface ScreenMessages {
     heroTitle: string;
     heroSubtitle: string;
     heroCta: string;
-    featuresHeading: string;
+    /** Value-prop section 1: "Learn TON from Zero" */
     learnTitle: string;
     learnBody: string;
+    /** Value-prop section 2: "Earn On-Chain Credentials" */
     certTitle: string;
     certBody: string;
-    referralTitle: string;
-    referralBody: string;
-    multilingualTitle: string;
-    multilingualBody: string;
-    sectionsHeading: string;
-    sectionsSubtitle: string;
-    browseAll: string;
+    /** Value-prop section 3: "Built for Telegram" */
+    telegramTitle: string;
+    telegramBody: string;
   };
   /** Learning catalog tab + section-detail chrome. */
   learning: {
@@ -225,26 +222,19 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
     },
     landing: {
       eyebrow: "Learn on TON",
-      heroTitle: "Learn TON, earn on-chain certificates, inside Telegram",
+      heroTitle: "We explain the complex in plain words",
       heroSubtitle:
-        "Short, hands-on courses that take you from the basics of TON to minting your own soulbound certificate — all without leaving Telegram.",
+        "Structured courses on TON — from beginner to architect — with on-chain certificates to prove what you know.",
       heroCta: "Start learning",
-      featuresHeading: "Why Gram Academy",
-      learnTitle: "Learn by doing",
+      learnTitle: "Learn TON from Zero",
       learnBody:
-        "Bite-sized lessons and a quiz on every course. Read, practice, and prove what you know.",
-      certTitle: "Soulbound certificates",
+        "We explain complex TON topics in simple, engaging language. Structured courses take you from beginner to architect, step by step.",
+      certTitle: "Earn On-Chain Credentials",
       certBody:
-        "Finish a course and mint a certificate NFT to your own wallet — permanent proof, bound to you.",
-      referralTitle: "Referral rewards",
-      referralBody:
-        "Invite friends for a Stars discount, and earn a TON payout when they mint their first certificate.",
-      multilingualTitle: "In your language",
-      multilingualBody:
-        "Every course and lesson is available in English, Russian, and Chinese.",
-      sectionsHeading: "Start your journey",
-      sectionsSubtitle: "Pick a track and begin.",
-      browseAll: "Browse all courses",
+        "Complete courses and mint soulbound SBT certificates on TON. Permanent, verifiable proof of your knowledge in your own wallet.",
+      telegramTitle: "Built for Telegram",
+      telegramBody:
+        "Learn right inside Telegram as a seamless Mini App. Share your progress and invite friends without ever leaving the chat.",
     },
     learning: {
       tab: "Learning",
@@ -386,7 +376,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       infoIntro: "Share your link — when a friend joins Gram Academy through it, you both benefit.",
       infoForYouTitle: "For you",
       infoForYouBody:
-        "When your friend mints their first certificate, 0.05 TON is sent to your connected wallet automatically — no extra steps.",
+        "When your friend mints their first certificate, 0.05 GRAM is sent to your connected wallet automatically — no extra steps.",
       infoForFriendTitle: "For your friend",
       infoForFriendBody: "They get 15% off any paid course, for as long as they're on Gram Academy.",
       infoClose: "Got it",
@@ -431,26 +421,19 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
     },
     landing: {
       eyebrow: "Учись на TON",
-      heroTitle: "Изучай TON и получай сертификаты в блокчейне — прямо в Telegram",
+      heroTitle: "Объясняем сложное простым языком",
       heroSubtitle:
-        "Короткие практические курсы: от основ TON до минта собственного soulbound-сертификата — не выходя из Telegram.",
+        "Структурированные курсы по TON — от новичка до архитектора — с сертификатами в блокчейне, подтверждающими твои знания.",
       heroCta: "Начать учиться",
-      featuresHeading: "Почему Gram Academy",
-      learnTitle: "Учись на практике",
+      learnTitle: "Изучай TON с нуля",
       learnBody:
-        "Компактные уроки и тест в каждом курсе. Читай, практикуйся и подтверждай знания.",
-      certTitle: "Soulbound-сертификаты",
+        "Объясняем сложные темы TON простым и увлекательным языком. Структурированные курсы проведут тебя от новичка до архитектора, шаг за шагом.",
+      certTitle: "Получай сертификаты в блокчейне",
       certBody:
-        "Заверши курс и сминти NFT-сертификат в свой кошелёк — постоянное подтверждение, привязанное к тебе.",
-      referralTitle: "Реферальные награды",
-      referralBody:
-        "Приглашай друзей ради скидки в Stars и получай выплату в TON, когда они минтят первый сертификат.",
-      multilingualTitle: "На твоём языке",
-      multilingualBody:
-        "Каждый курс и урок доступны на английском, русском и китайском.",
-      sectionsHeading: "Начни свой путь",
-      sectionsSubtitle: "Выбери направление и приступай.",
-      browseAll: "Смотреть все курсы",
+        "Проходи курсы и минти soulbound SBT-сертификаты на TON. Постоянное, проверяемое подтверждение знаний в твоём кошельке.",
+      telegramTitle: "Создано для Telegram",
+      telegramBody:
+        "Учись прямо внутри Telegram — как нативное мини-приложение. Делись прогрессом и приглашай друзей, не покидая чат.",
     },
     learning: {
       tab: "Обучение",
@@ -593,7 +576,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       infoIntro: "Делись своей ссылкой — когда друг присоединится к Gram Academy по ней, выиграете оба.",
       infoForYouTitle: "Тебе",
       infoForYouBody:
-        "Когда твой друг сминтит свой первый сертификат, на твой подключённый кошелёк автоматически придёт 0.05 TON — без лишних действий.",
+        "Когда твой друг сминтит свой первый сертификат, на твой подключённый кошелёк автоматически придёт 0.05 GRAM — без лишних действий.",
       infoForFriendTitle: "Твоему другу",
       infoForFriendBody: "Скидка -15% на любой платный курс, пока он на Gram Academy.",
       infoClose: "Понятно",
@@ -638,23 +621,19 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
     },
     landing: {
       eyebrow: "在 TON 上学习",
-      heroTitle: "学习 TON，获取链上证书，尽在 Telegram",
+      heroTitle: "用简单语言解释复杂概念",
       heroSubtitle:
-        "简短的实操课程，带你从 TON 基础一路到铸造属于自己的灵魂绑定证书——全程无需离开 Telegram。",
+        "系统化的 TON 课程——从入门到架构师——链上证书证明你的所学。",
       heroCta: "开始学习",
-      featuresHeading: "为什么选择 Gram Academy",
-      learnTitle: "在实践中学习",
-      learnBody: "精简课程，每门课都配测验。阅读、练习并证明你的掌握程度。",
-      certTitle: "灵魂绑定证书",
-      certBody: "完成课程即可将证书 NFT 铸造到你自己的钱包——永久留存，与你绑定。",
-      referralTitle: "推荐奖励",
-      referralBody:
-        "邀请好友可享 Stars 折扣；当他们铸造首张证书时，你还能获得 TON 奖励。",
-      multilingualTitle: "支持你的语言",
-      multilingualBody: "每门课程和课时均提供英文、俄文和中文版本。",
-      sectionsHeading: "开启你的旅程",
-      sectionsSubtitle: "选择一个方向，即刻开始。",
-      browseAll: "浏览全部课程",
+      learnTitle: "从零学习 TON",
+      learnBody:
+        "用简单易懂的语言讲解复杂的 TON 主题。系统化课程带你从入门到精通，循序渐进。",
+      certTitle: "获取链上凭证",
+      certBody:
+        "完成课程，在 TON 上铸造灵魂绑定 SBT 证书。永久可验证的知识证明，存放在你自己的钱包中。",
+      telegramTitle: "专为 Telegram 打造",
+      telegramBody:
+        "作为无缝小程序，直接在 Telegram 内学习。分享进度、邀请好友，无需离开聊天。",
     },
     learning: {
       tab: "学习",
@@ -792,7 +771,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       infoTitle: "推荐奖励如何运作",
       infoIntro: "分享你的邀请链接——好友通过它加入 Gram Academy 后，你们都会获益。",
       infoForYouTitle: "对你而言",
-      infoForYouBody: "好友首次铸造证书后，0.05 TON 会自动发送到你已连接的钱包——无需额外操作。",
+      infoForYouBody: "好友首次铸造证书后，0.05 GRAM 会自动发送到你已连接的钱包——无需额外操作。",
       infoForFriendTitle: "对好友而言",
       infoForFriendBody: "只要还在 Gram Academy 学习，任意付费课程都可享 -15% 折扣。",
       infoClose: "知道了",
