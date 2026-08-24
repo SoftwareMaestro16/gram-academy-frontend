@@ -27,6 +27,8 @@ export interface ScreenMessages {
     /** Value-prop section 1: "Learn TON from Zero" */
     learnTitle: string;
     learnBody: string;
+    /** Small 3-step "beginner -> architect" chip trail under the learn section. */
+    learnPathSteps: [string, string, string];
     /** Value-prop section 2: "Earn On-Chain Credentials" */
     certTitle: string;
     certBody: string;
@@ -229,6 +231,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       learnTitle: "Learn TON from Zero",
       learnBody:
         "We explain complex TON topics in simple, engaging language. Structured courses take you from beginner to architect, step by step.",
+      learnPathSteps: ["Beginner", "Builder", "Architect"],
       certTitle: "Earn On-Chain Credentials",
       certBody:
         "Complete courses and mint soulbound SBT certificates on TON. Permanent, verifiable proof of your knowledge in your own wallet.",
@@ -428,6 +431,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       learnTitle: "Изучай TON с нуля",
       learnBody:
         "Объясняем сложные темы TON простым и увлекательным языком. Структурированные курсы проведут тебя от новичка до архитектора, шаг за шагом.",
+      learnPathSteps: ["Новичок", "Практик", "Архитектор"],
       certTitle: "Получай сертификаты в блокчейне",
       certBody:
         "Проходи курсы и минти soulbound SBT-сертификаты на TON. Постоянное, проверяемое подтверждение знаний в твоём кошельке.",
@@ -628,6 +632,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       learnTitle: "从零学习 TON",
       learnBody:
         "用简单易懂的语言讲解复杂的 TON 主题。系统化课程带你从入门到精通，循序渐进。",
+      learnPathSteps: ["入门", "进阶", "架构师"],
       certTitle: "获取链上凭证",
       certBody:
         "完成课程，在 TON 上铸造灵魂绑定 SBT 证书。永久可验证的知识证明，存放在你自己的钱包中。",

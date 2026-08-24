@@ -1,37 +1,81 @@
 import type { ReactNode } from "react";
 import { ArrowRight, Award, BookOpen, MessageCircle } from "lucide-react";
 import { Screen } from "../../components/Screen";
-import { Card } from "../../components/Card";
 import { Button } from "../../components/Button";
 import { useT } from "../../i18n/useT";
 import { useAppStore } from "../../state/useAppStore";
+import { useInView } from "../../lib/useInView";
+import { cn } from "../../lib/cn";
 
-/** One value-prop section: icon in an accent-soft badge, title, short body. */
-function Feature({
+/** One full advantage section: icon badge, title, body, and an optional small
+ *  illustrative block. Fades/slides into place the first time it's scrolled
+ *  into view (DESIGN.md §Motion: subtle only, respects prefers-reduced-motion
+ *  globally via app.css). Each call is its own <section> — three of these
+ *  side by side is three distinct blocks, not one section split into cards. */
+function Advantage({
   icon,
   title,
   body,
+  tone,
+  decoration,
 }: {
   icon: ReactNode;
   title: string;
   body: string;
+  tone: "plain" | "accent" | "muted";
+  decoration?: ReactNode;
 }) {
+  const [ref, inView] = useInView<HTMLElement>();
   return (
-    <Card className="flex flex-col gap-2">
-      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
+    <section
+      ref={ref}
+      className={cn(
+        "rounded-2xl p-5 transition-all duration-700 ease-out xs:p-6",
+        tone === "accent" && "bg-accent-soft",
+        tone === "muted" && "bg-surface-2",
+        inView ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
+      )}
+    >
+      <span
+        className={cn(
+          "icon-float flex h-14 w-14 items-center justify-center rounded-2xl text-accent",
+          tone === "plain" ? "bg-accent-soft" : "bg-bg",
+        )}
+      >
         {icon}
       </span>
-      <h3 className="font-medium leading-snug">{title}</h3>
-      <p className="text-sm text-text-muted">{body}</p>
-    </Card>
+      <h2 className="mt-4 text-xl font-bold leading-snug">{title}</h2>
+      <p className="mt-2 max-w-prose text-text-muted">{body}</p>
+      {decoration}
+    </section>
+  );
+}
+
+/** Three-step "beginner -> architect" chip trail — the small illustrative
+ *  block for the "learn" advantage. */
+function LearnPathDecoration({ steps }: { steps: [string, string, string] }) {
+  return (
+    <div className="mt-4 flex items-center gap-1.5">
+      {steps.map((step, index) => (
+        <div key={step} className="flex items-center gap-1.5">
+          <span className="whitespace-nowrap rounded-full border border-border bg-bg px-2.5 py-1 text-xs font-medium text-text-muted">
+            {step}
+          </span>
+          {index < steps.length - 1 && (
+            <span aria-hidden className="h-px w-3 bg-border" />
+          )}
+        </div>
+      ))}
+    </div>
   );
 }
 
 /**
- * Marketing landing (Home tab). A hero with the Gram Academy tagline, three
- * value-prop sections (learn, certificates, Telegram), and a single CTA that
- * navigates to the Learning tab (catalog). No section teasers or course
- * previews — this is a marketing page, not a catalog browser.
+ * Marketing landing (Home tab). A hero, then three distinct full advantage
+ * sections (learn / on-chain certificate / Telegram-native), each its own
+ * <section> with a lightly animated reveal, then a single CTA to the
+ * Learning tab (catalog). No section teasers or course previews — this is a
+ * marketing page, not a catalog browser.
  */
 export function HomeScreen() {
   const { t } = useT();
@@ -52,24 +96,30 @@ export function HomeScreen() {
         </p>
       </section>
 
-      {/* Value props */}
-      <section className="mt-10 grid grid-cols-1 gap-3">
-        <Feature
-          icon={<BookOpen className="h-5 w-5" />}
+      {/* Three distinct advantage sections */}
+      <div className="mt-10 flex flex-col gap-4">
+        <Advantage
+          tone="plain"
+          icon={<BookOpen className="h-6 w-6" />}
           title={t.landing.learnTitle}
           body={t.landing.learnBody}
+          decoration={
+            <LearnPathDecoration steps={t.landing.learnPathSteps} />
+          }
         />
-        <Feature
-          icon={<Award className="h-5 w-5" />}
+        <Advantage
+          tone="accent"
+          icon={<Award className="h-6 w-6" />}
           title={t.landing.certTitle}
           body={t.landing.certBody}
         />
-        <Feature
-          icon={<MessageCircle className="h-5 w-5" />}
+        <Advantage
+          tone="muted"
+          icon={<MessageCircle className="h-6 w-6" />}
           title={t.landing.telegramTitle}
           body={t.landing.telegramBody}
         />
-      </section>
+      </div>
 
       {/* CTA */}
       <section className="mt-10 pb-2">

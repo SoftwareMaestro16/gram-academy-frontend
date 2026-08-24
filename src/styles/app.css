@@ -358,6 +358,21 @@ body {
   animation: check-pop 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Gentle idle float for a landing-page section's icon badge — small enough to
+   read as "alive", never distracting (DESIGN.md §Motion: subtle only). */
+@keyframes icon-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+.icon-float {
+  animation: icon-float 3.4s ease-in-out infinite;
+}
+
 /* Motion: subtle only, and honor reduced-motion (DESIGN.md §Motion). */
 @media (prefers-reduced-motion: reduce) {
   *,
