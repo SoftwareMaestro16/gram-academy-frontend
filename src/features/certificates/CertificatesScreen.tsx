@@ -67,47 +67,44 @@ function CertificateCard({
     <Card
       onClick={onClick}
       featured={minted}
-      className={cn(minted && "border-accent/40")}
+      className={cn("flex flex-col", minted && "border-accent/40")}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-center gap-3">
         <div
           className={
-            "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full " +
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl " +
             (minted
               ? "bg-accent text-on-accent"
               : reserved
-                ? "bg-surface-2 text-accent"
+                ? "bg-accent-soft text-accent"
                 : "bg-surface-2 text-text-faint")
           }
         >
           {minted ? (
-            <Award className="h-4 w-4" />
+            <Award className="h-5 w-5" />
           ) : reserved ? (
             <Spinner className="h-4 w-4" />
           ) : (
             <Lock className="h-4 w-4" />
           )}
         </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <h3
-              className={
-                "font-medium leading-snug " +
-                (course.certificate === "none" ? "text-text-muted" : "text-text")
-              }
-            >
-              {course.title}
-            </h3>
-            <div className="shrink-0">
-              {minted && <Badge tone="accent">{t.certificates.unlocked}</Badge>}
-              {reserved && <Badge tone="neutral">{t.certificates.inProgress}</Badge>}
-              {course.certificate === "none" && (
-                <Badge tone="muted">{t.certificates.locked}</Badge>
-              )}
-            </div>
-          </div>
-          <MetaRow className="mt-1" items={meta} />
-        </div>
+        <h3
+          className={cn(
+            "min-w-0 flex-1 line-clamp-2 font-medium leading-snug",
+            course.certificate === "none" ? "text-text-muted" : "text-text",
+          )}
+        >
+          {course.title}
+        </h3>
+      </div>
+
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <MetaRow items={meta} />
+        {minted && <Badge tone="accent">{t.certificates.unlocked}</Badge>}
+        {reserved && <Badge tone="neutral">{t.certificates.inProgress}</Badge>}
+        {course.certificate === "none" && (
+          <Badge tone="muted">{t.certificates.locked}</Badge>
+        )}
       </div>
     </Card>
   );
