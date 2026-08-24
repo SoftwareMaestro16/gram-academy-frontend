@@ -18,6 +18,36 @@ export type { Locale };
  */
 export interface ScreenMessages {
   home: { title: string; subtitle: string; empty: string; courses: string };
+  /** Marketing landing (Home tab). */
+  landing: {
+    eyebrow: string;
+    heroTitle: string;
+    heroSubtitle: string;
+    heroCta: string;
+    featuresHeading: string;
+    learnTitle: string;
+    learnBody: string;
+    certTitle: string;
+    certBody: string;
+    referralTitle: string;
+    referralBody: string;
+    multilingualTitle: string;
+    multilingualBody: string;
+    sectionsHeading: string;
+    sectionsSubtitle: string;
+    browseAll: string;
+  };
+  /** Learning catalog tab + section-detail chrome. */
+  learning: {
+    tab: string;
+    title: string;
+    subtitle: string;
+    empty: string;
+    courses: string;
+    hoursMeta: string;
+    minutesMeta: string;
+    sectionCertHint: string;
+  };
   section: { lessons: string; quizzes: string; progress: string; empty: string };
   course: {
     free: string;
@@ -36,6 +66,12 @@ export interface ScreenMessages {
     roadmap: string;
     certificateMeta: string;
     whatsInside: string;
+    // Reworked course landing (reusable template)
+    startCourse: string;
+    reviewCourse: string;
+    whatYouLearn: string;
+    durationHours: string;
+    durationMinutes: string;
   };
   lesson: {
     markComplete: string;
@@ -44,6 +80,13 @@ export interface ScreenMessages {
     finish: string;
     eyebrow: string;
     contents: string;
+    // Reusable lesson template (in-page nav + footer)
+    onThisPage: string;
+    prev: string;
+    toQuiz: string;
+    helpfulQuestion: string;
+    helpfulYes: string;
+    helpfulNo: string;
   };
   quiz: {
     progress: string;
@@ -71,9 +114,19 @@ export interface ScreenMessages {
     cooldownHeading: string;
     cooldownAvailableAt: string;
     cooldownIn: string;
-    // Failure screen (same copy for fail/timeout/violation)
+    // Failure screen — low-score fail
     failedBody: string;
     retryCountdown: string;
+    // Failure screen — attempt ended by a broken rule (violation/timeout/bg)
+    failedRuleTitle: string;
+    failedRuleBody: string;
+    // Post-pass: course rating + mint
+    rateHeading: string;
+    rateHint: string;
+    rateThanks: string;
+    rateStar: string;
+    mintHeading: string;
+    backToCourse: string;
   };
   profile: {
     title: string;
@@ -149,6 +202,8 @@ export interface ScreenMessages {
     errorAlreadyMinted: string;
     errorNotCompleted: string;
     errorWalletRequired: string;
+    /** Mint CTA label used at the end of a passed quiz / completed course. */
+    mintCta: string;
   };
   /** Telegram Stars purchase flow (Course screen — docs/05-frontend-spec.md §5). */
   purchase: {
@@ -167,6 +222,40 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       subtitle: "Courses on TON",
       empty: "No courses yet.",
       courses: "{n} courses",
+    },
+    landing: {
+      eyebrow: "Learn on TON",
+      heroTitle: "Learn TON, earn on-chain certificates, inside Telegram",
+      heroSubtitle:
+        "Short, hands-on courses that take you from the basics of TON to minting your own soulbound certificate — all without leaving Telegram.",
+      heroCta: "Start learning",
+      featuresHeading: "Why Gram Academy",
+      learnTitle: "Learn by doing",
+      learnBody:
+        "Bite-sized lessons and a quiz on every course. Read, practice, and prove what you know.",
+      certTitle: "Soulbound certificates",
+      certBody:
+        "Finish a course and mint a certificate NFT to your own wallet — permanent proof, bound to you.",
+      referralTitle: "Referral rewards",
+      referralBody:
+        "Invite friends for a Stars discount, and earn a TON payout when they mint their first certificate.",
+      multilingualTitle: "In your language",
+      multilingualBody:
+        "Every course and lesson is available in English, Russian, and Chinese.",
+      sectionsHeading: "Start your journey",
+      sectionsSubtitle: "Pick a track and begin.",
+      browseAll: "Browse all courses",
+    },
+    learning: {
+      tab: "Learning",
+      title: "Learning",
+      subtitle: "Browse the catalog by section.",
+      empty: "No courses yet.",
+      courses: "{n} courses",
+      hoursMeta: "{n} hr",
+      minutesMeta: "{n} min",
+      sectionCertHint:
+        "Complete the free courses in this section to earn the {section} certificate.",
     },
     section: {
       lessons: "{n} lessons",
@@ -191,6 +280,11 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       roadmap: "Course roadmap",
       certificateMeta: "Certificate",
       whatsInside: "What's inside",
+      startCourse: "Start course",
+      reviewCourse: "Review course",
+      whatYouLearn: "What you'll learn",
+      durationHours: "{n} hr",
+      durationMinutes: "{n} min",
     },
     lesson: {
       markComplete: "Mark as complete",
@@ -199,6 +293,12 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       finish: "Back to course",
       eyebrow: "Lesson {current} of {total}",
       contents: "Contents",
+      onThisPage: "On this page",
+      prev: "Previous",
+      toQuiz: "Go to the test",
+      helpfulQuestion: "Was this helpful?",
+      helpfulYes: "Yes",
+      helpfulNo: "No",
     },
     quiz: {
       progress: "Question {current} / {total}",
@@ -226,6 +326,15 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       failedBody:
         "Unfortunately you didn't get enough correct answers to pass this quiz. Try again in about an hour.",
       retryCountdown: "Available again in {duration}",
+      failedRuleTitle: "Test ended",
+      failedRuleBody:
+        "This attempt ended because a quiz rule was broken — you left the app or ran out of time. You can try again in about an hour.",
+      rateHeading: "Rate this course",
+      rateHint: "How useful was it?",
+      rateThanks: "Thanks for your rating!",
+      rateStar: "{n} stars",
+      mintHeading: "Claim your certificate",
+      backToCourse: "Back to course",
     },
     profile: {
       title: "Profile",
@@ -303,6 +412,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       errorAlreadyMinted: "This certificate has already been minted.",
       errorNotCompleted: "Finish the course to unlock your certificate.",
       errorWalletRequired: "Connect a wallet first.",
+      mintCta: "Mint Certificate",
     },
     purchase: {
       opening: "Opening payment…",
@@ -318,6 +428,40 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       subtitle: "Курсы по TON",
       empty: "Пока нет курсов.",
       courses: "{n} курсов",
+    },
+    landing: {
+      eyebrow: "Учись на TON",
+      heroTitle: "Изучай TON и получай сертификаты в блокчейне — прямо в Telegram",
+      heroSubtitle:
+        "Короткие практические курсы: от основ TON до минта собственного soulbound-сертификата — не выходя из Telegram.",
+      heroCta: "Начать учиться",
+      featuresHeading: "Почему Gram Academy",
+      learnTitle: "Учись на практике",
+      learnBody:
+        "Компактные уроки и тест в каждом курсе. Читай, практикуйся и подтверждай знания.",
+      certTitle: "Soulbound-сертификаты",
+      certBody:
+        "Заверши курс и сминти NFT-сертификат в свой кошелёк — постоянное подтверждение, привязанное к тебе.",
+      referralTitle: "Реферальные награды",
+      referralBody:
+        "Приглашай друзей ради скидки в Stars и получай выплату в TON, когда они минтят первый сертификат.",
+      multilingualTitle: "На твоём языке",
+      multilingualBody:
+        "Каждый курс и урок доступны на английском, русском и китайском.",
+      sectionsHeading: "Начни свой путь",
+      sectionsSubtitle: "Выбери направление и приступай.",
+      browseAll: "Смотреть все курсы",
+    },
+    learning: {
+      tab: "Обучение",
+      title: "Обучение",
+      subtitle: "Каталог курсов по разделам.",
+      empty: "Пока нет курсов.",
+      courses: "{n} курсов",
+      hoursMeta: "{n} ч",
+      minutesMeta: "{n} мин",
+      sectionCertHint:
+        "Пройди бесплатные курсы этого раздела, чтобы получить сертификат «{section}».",
     },
     section: {
       lessons: "{n} уроков",
@@ -342,6 +486,11 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       roadmap: "Программа курса",
       certificateMeta: "Сертификат",
       whatsInside: "Что внутри",
+      startCourse: "Начать курс",
+      reviewCourse: "Повторить курс",
+      whatYouLearn: "Чему вы научитесь",
+      durationHours: "{n} ч",
+      durationMinutes: "{n} мин",
     },
     lesson: {
       markComplete: "Урок пройден",
@@ -350,6 +499,12 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       finish: "К курсу",
       eyebrow: "Урок {current} из {total}",
       contents: "Программа",
+      onThisPage: "На этой странице",
+      prev: "Назад",
+      toQuiz: "Перейти к тесту",
+      helpfulQuestion: "Было ли это полезно?",
+      helpfulYes: "Да",
+      helpfulNo: "Нет",
     },
     quiz: {
       progress: "Вопрос {current} / {total}",
@@ -378,6 +533,15 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       failedBody:
         "К сожалению, правильных ответов не хватило, чтобы сдать тест. Попробуй снова примерно через час.",
       retryCountdown: "Снова доступно через {duration}",
+      failedRuleTitle: "Тест прерван",
+      failedRuleBody:
+        "Попытка завершилась, потому что было нарушено правило теста — ты вышел из приложения или закончилось время. Попробовать снова можно примерно через час.",
+      rateHeading: "Оцените курс",
+      rateHint: "Насколько это было полезно?",
+      rateThanks: "Спасибо за оценку!",
+      rateStar: "{n} звёзд",
+      mintHeading: "Получите сертификат",
+      backToCourse: "К курсу",
     },
     profile: {
       title: "Профиль",
@@ -455,6 +619,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       errorAlreadyMinted: "Этот сертификат уже получен.",
       errorNotCompleted: "Заверши курс, чтобы открыть сертификат.",
       errorWalletRequired: "Сначала подключите кошелёк.",
+      mintCta: "Создать сертификат",
     },
     purchase: {
       opening: "Открываем оплату…",
@@ -470,6 +635,36 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       subtitle: "TON 课程",
       empty: "暂无课程。",
       courses: "{n} 门课程",
+    },
+    landing: {
+      eyebrow: "在 TON 上学习",
+      heroTitle: "学习 TON，获取链上证书，尽在 Telegram",
+      heroSubtitle:
+        "简短的实操课程，带你从 TON 基础一路到铸造属于自己的灵魂绑定证书——全程无需离开 Telegram。",
+      heroCta: "开始学习",
+      featuresHeading: "为什么选择 Gram Academy",
+      learnTitle: "在实践中学习",
+      learnBody: "精简课程，每门课都配测验。阅读、练习并证明你的掌握程度。",
+      certTitle: "灵魂绑定证书",
+      certBody: "完成课程即可将证书 NFT 铸造到你自己的钱包——永久留存，与你绑定。",
+      referralTitle: "推荐奖励",
+      referralBody:
+        "邀请好友可享 Stars 折扣；当他们铸造首张证书时，你还能获得 TON 奖励。",
+      multilingualTitle: "支持你的语言",
+      multilingualBody: "每门课程和课时均提供英文、俄文和中文版本。",
+      sectionsHeading: "开启你的旅程",
+      sectionsSubtitle: "选择一个方向，即刻开始。",
+      browseAll: "浏览全部课程",
+    },
+    learning: {
+      tab: "学习",
+      title: "学习",
+      subtitle: "按板块浏览课程目录。",
+      empty: "暂无课程。",
+      courses: "{n} 门课程",
+      hoursMeta: "{n} 小时",
+      minutesMeta: "{n} 分钟",
+      sectionCertHint: "完成本板块的免费课程即可获得「{section}」证书。",
     },
     section: {
       lessons: "{n} 节课",
@@ -494,6 +689,11 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       roadmap: "课程大纲",
       certificateMeta: "证书",
       whatsInside: "课程内容",
+      startCourse: "开始课程",
+      reviewCourse: "复习课程",
+      whatYouLearn: "你将学到",
+      durationHours: "{n} 小时",
+      durationMinutes: "{n} 分钟",
     },
     lesson: {
       markComplete: "标记为已完成",
@@ -502,6 +702,12 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       finish: "返回课程",
       eyebrow: "第 {current} / {total} 课",
       contents: "目录",
+      onThisPage: "本页内容",
+      prev: "上一节",
+      toQuiz: "前往测验",
+      helpfulQuestion: "这节课有帮助吗？",
+      helpfulYes: "有帮助",
+      helpfulNo: "没有",
     },
     quiz: {
       progress: "第 {current} / {total} 题",
@@ -528,6 +734,14 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       cooldownIn: "{duration} 后",
       failedBody: "很遗憾，正确答案数量不足，未能通过测验。请大约一小时后重试。",
       retryCountdown: "{duration} 后可重试",
+      failedRuleTitle: "测验已结束",
+      failedRuleBody: "本次测验因违反规则而结束——你离开了应用或答题超时。大约一小时后可再次尝试。",
+      rateHeading: "为课程评分",
+      rateHint: "它有多大帮助？",
+      rateThanks: "感谢你的评分！",
+      rateStar: "{n} 星",
+      mintHeading: "领取你的证书",
+      backToCourse: "返回课程",
     },
     profile: {
       title: "个人中心",
@@ -604,6 +818,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       errorAlreadyMinted: "该证书已被铸造。",
       errorNotCompleted: "完成课程后即可领取证书。",
       errorWalletRequired: "请先连接钱包。",
+      mintCta: "铸造证书",
     },
     purchase: {
       opening: "正在打开支付…",

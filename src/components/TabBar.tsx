@@ -1,14 +1,17 @@
-import { Award, House, User } from "lucide-react";
+import { Award, GraduationCap, House, User } from "lucide-react";
 import { cn } from "../lib/cn";
 import { useT } from "../i18n/useT";
 import { useAppStore, type AppView, type RootTab } from "../state/useAppStore";
 import { selectionHaptic } from "../lib/telegram";
 
-/** Maps any view to the root tab it belongs under. */
+/** Maps any view to the root tab it belongs under. The catalog drill-down
+ *  (section → course → lesson → quiz) lives under the Learning tab; only the
+ *  marketing landing maps to Home. */
 function tabForView(view: AppView): RootTab {
   if (view.name === "profile") return "profile";
   if (view.name === "certificates") return "certificates";
-  return "home";
+  if (view.name === "home") return "home";
+  return "learning";
 }
 
 /**
@@ -28,6 +31,7 @@ export function TabBar() {
 
   const tabs: { id: RootTab; label: string; Icon: typeof House }[] = [
     { id: "home", label: c.nav.home, Icon: House },
+    { id: "learning", label: t.learning.tab, Icon: GraduationCap },
     { id: "certificates", label: t.profile.certificates, Icon: Award },
     { id: "profile", label: c.nav.profile, Icon: User },
   ];

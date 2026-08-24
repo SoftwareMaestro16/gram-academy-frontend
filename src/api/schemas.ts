@@ -113,6 +113,10 @@ export const courseSummarySchema = z.object({
   description: z.string(),
   lessonCount: z.number(),
   quizCount: z.number(),
+  // Server-computed total duration estimate for the whole course. Optional so
+  // the client keeps parsing before the backend deploy that adds it; the UI
+  // hides the time chip when it's absent.
+  estimatedMinutes: z.number().optional(),
   isPurchased: z.boolean(),
   completedLessons: z.number(),
   completedQuizzes: z.number(),
@@ -146,6 +150,13 @@ export const lessonDetailSchema = z.object({
   title: z.string(),
   body: z.string(), // markdown, pre-localized
   completed: z.boolean(),
+  // Additive, optional (server may not ship these yet — the client parses and
+  // degrades gracefully before the backend deploy that adds them):
+  //  - `estimatedMinutes`: server-computed reading time for this lesson.
+  //  - `feedbackHelpful`: the caller's own prior "was this helpful?" answer
+  //    (null = never answered), so a revisit shows their earlier pick.
+  estimatedMinutes: z.number().optional(),
+  feedbackHelpful: z.boolean().nullable().optional(),
 });
 export type LessonDetail = z.infer<typeof lessonDetailSchema>;
 
@@ -168,6 +179,12 @@ export const quizDetailSchema = z.object({
   // failed attempt, or null when not in cooldown. Lets the client show
   // "available at HH:MM" without a failed /start round-trip.
   cooldownUntil: z.string().nullable(),
+  // Additive, optional: the server-authoritative effective pass threshold
+  // (`minCorrect` out of `totalQuestions`). The client renders these verbatim
+  // on the pre-quiz rules screen instead of recomputing — falls back to the
+  // public formula (quizMath) only when the server hasn't shipped them yet.
+  minCorrect: z.number().optional(),
+  totalQuestions: z.number().optional(),
 });
 export type QuizDetail = z.infer<typeof quizDetailSchema>;
 
@@ -187,6 +204,13 @@ export const courseDetailSchema = z.object({
   locked: z.boolean(),
   lessons: z.array(lessonDetailSchema),
   quizzes: z.array(quizDetailSchema),
+  // Additive, optional (server may not ship these yet):
+  //  - `estimatedMinutes`: whole-course duration estimate (rendered "2.5 hr").
+  //  - `myRating`: the caller's own 1–5 course rating (null = not yet rated),
+  //    so the post-quiz rating prompt reflects an existing pick instead of
+  //    re-asking.
+  estimatedMinutes: z.number().optional(),
+  myRating: z.number().nullable().optional(),
 });
 export type CourseDetail = z.infer<typeof courseDetailSchema>;
 
@@ -221,6 +245,13 @@ export const quizStartResponseSchema = z.object({
 });
 export type QuizStartResponse = z.infer<typeof quizStartResponseSchema>;
 
+// Additive, optional: why a finalized attempt failed, so the result screen can
+// distinguish "not enough correct answers" (retake) from "the attempt ended
+// because a rule was broken" (backgrounded / timeout / violation). Kept as a
+// loose string — an unknown value never breaks parsing and is classified as a
+// plain insufficient-score fail (see `isRuleEndedReason` in the quiz feature).
+const quizFailReasonSchema = z.string().optional();
+
 /** POST /v1/quizzes/:id/attempts/:attemptId/answer `{ questionIndex, selectedOption }` */
 export const quizAnswerResponseSchema = z.discriminatedUnion("done", [
   z.object({ done: z.literal(false), question: quizQuestionRevealSchema }),
@@ -229,6 +260,7 @@ export const quizAnswerResponseSchema = z.discriminatedUnion("done", [
     passed: z.boolean(),
     score: z.number(),
     retryAfterSeconds: z.number().nullable(),
+    reason: quizFailReasonSchema,
   }),
 ]);
 export type QuizAnswerResponse = z.infer<typeof quizAnswerResponseSchema>;
@@ -239,6 +271,7 @@ export const quizViolateResponseSchema = z.object({
   passed: z.literal(false),
   score: z.number(),
   retryAfterSeconds: z.number(),
+  reason: quizFailReasonSchema,
 });
 export type QuizViolateResponse = z.infer<typeof quizViolateResponseSchema>;
 
@@ -304,3 +337,22 @@ export const purchaseInvoiceResponseSchema = z.object({
   invoiceLink: z.string(),
 });
 export type PurchaseInvoiceResponse = z.infer<typeof purchaseInvoiceResponseSchema>;
+
+// --- Engagement: lesson feedback + course rating ----------------------------
+//
+// Additive endpoints the client calls but never depends on for correctness.
+// Both response shapes are intentionally permissive (unknown extra keys are
+// ignored) so the client keeps working before the backend ships them — a 404
+// is swallowed by the caller. The durable state is read back from
+// `LessonDetail.feedbackHelpful` / `CourseDetail.myRating`, not from these.
+
+/** POST /v1/lessons/:lessonId/feedback `{ helpful: boolean }`. */
+export const lessonFeedbackResponseSchema = z.object({ ok: z.boolean().optional() });
+export type LessonFeedbackResponse = z.infer<typeof lessonFeedbackResponseSchema>;
+
+/** POST /v1/courses/:slug/rating `{ rating: number }` (1–5). */
+export const courseRatingResponseSchema = z.object({
+  ok: z.boolean().optional(),
+  myRating: z.number().optional(),
+});
+export type CourseRatingResponse = z.infer<typeof courseRatingResponseSchema>;

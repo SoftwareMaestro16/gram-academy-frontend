@@ -6,6 +6,7 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { TabBar } from "./components/TabBar";
 import { HomeScreen } from "./features/home/HomeScreen";
+import { LearningScreen } from "./features/learning/LearningScreen";
 import { SectionScreen } from "./features/section/SectionScreen";
 import { CourseScreen } from "./features/course/CourseScreen";
 import { LessonScreen } from "./features/lesson/LessonScreen";
@@ -64,6 +65,8 @@ function renderView(view: AppView) {
   switch (view.name) {
     case "home":
       return <HomeScreen />;
+    case "learning":
+      return <LearningScreen />;
     case "section":
       return <SectionScreen sectionSlug={view.sectionSlug} />;
     case "course":
@@ -88,7 +91,10 @@ function AppShell() {
 
   useEffect(() => {
     const isRoot =
-      view.name === "home" || view.name === "certificates" || view.name === "profile";
+      view.name === "home" ||
+      view.name === "learning" ||
+      view.name === "certificates" ||
+      view.name === "profile";
     if (isRoot) {
       hideBackButton();
     } else {

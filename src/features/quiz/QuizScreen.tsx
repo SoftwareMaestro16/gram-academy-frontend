@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Award, RefreshCw, XCircle } from "lucide-react";
+import { Award, RefreshCw, Star, XCircle } from "lucide-react";
 import { Screen } from "../../components/Screen";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
@@ -10,9 +10,11 @@ import { format } from "../../i18n/strings";
 import {
   useAnswerQuizMutation,
   useCourseQuery,
+  useMe,
   useStartQuizMutation,
   useViolateQuizMutation,
 } from "../../api/queries";
+import { useRateCourseMutation } from "../../api/engagement";
 import { ApiError } from "../../api/http";
 import { useAppStore } from "../../state/useAppStore";
 import { cn } from "../../lib/cn";
@@ -20,8 +22,9 @@ import { impactHaptic, notificationHaptic, selectionHaptic } from "../../lib/tel
 import { useCountdownTo } from "../../lib/useCountdown";
 import { useNoCopyGuard } from "../../lib/useNoCopyGuard";
 import { onAppBackgrounded } from "../../lib/visibility";
+import { MintFlow } from "../course/MintFlow";
 import { formatDuration, minCorrectAnswers } from "./quizMath";
-import type { QuizDetail, QuizQuestionReveal } from "../../api/schemas";
+import type { CourseDetail, QuizDetail, QuizQuestionReveal, Wallet } from "../../api/schemas";
 
 /**
  * Quiz attempt state machine (QUIZ-INTEGRITY.md): pre-quiz rules -> `/start`
@@ -29,6 +32,10 @@ import type { QuizDetail, QuizQuestionReveal } from "../../api/schemas";
  * own 30s server clock) -> result. A background/hidden event during "active"
  * calls `/violate` and finalizes as failed, same as a timeout. Grading,
  * timing, shuffling, and cooldown are entirely server-authoritative.
+ *
+ * On PASS the result screen also hosts a course rating + the certificate mint
+ * button (§4) — mint now happens here at the end of the quiz, not on the
+ * course page.
  */
 type Phase =
   | { name: "rules" }
@@ -39,9 +46,25 @@ type Phase =
       questionTimeLimitSeconds: number;
       question: QuizQuestionReveal;
     }
-  | { name: "result"; passed: boolean; score: number; retryAfterSeconds: number | null };
+  | {
+      name: "result";
+      passed: boolean;
+      score: number;
+      retryAfterSeconds: number | null;
+      /** Why a failed attempt ended — distinguishes a rule-ended attempt
+       *  (violation / backgrounding / timeout) from a plain low score. */
+      reason?: string | undefined;
+    };
 
 const CLOCK_LOCALE: Record<string, string> = { en: "en-US", ru: "ru-RU", zh: "zh-CN" };
+
+// A failed attempt that ended because a rule was broken (rather than simply too
+// few correct answers) shows a distinct message. Unknown/absent reasons fall
+// through to the plain "not enough correct" copy.
+const RULE_ENDED_REASONS = new Set(["violation", "backgrounded", "timeout", "hidden", "blur"]);
+function isRuleEndedReason(reason: string | undefined): boolean {
+  return reason !== undefined && RULE_ENDED_REASONS.has(reason);
+}
 
 function formatClock(ms: number, locale: string): string {
   return new Intl.DateTimeFormat(CLOCK_LOCALE[locale] ?? "en-US", {
@@ -62,8 +85,10 @@ function RulesView({
   onStart: () => void;
 }) {
   const { t, locale } = useT();
-  const total = quiz.questions.length;
-  const minCorrect = minCorrectAnswers(total);
+  // Prefer the server-authoritative threshold; fall back to the public formula
+  // only when the backend hasn't shipped `minCorrect`/`totalQuestions` yet.
+  const total = quiz.totalQuestions ?? quiz.questions.length;
+  const minCorrect = quiz.minCorrect ?? minCorrectAnswers(total);
   const cooldownMs = quiz.cooldownUntil ? new Date(quiz.cooldownUntil).getTime() : null;
   const cooldownSecondsLeft = useCountdownTo(cooldownMs);
   const showCooldown = cooldownMs !== null && cooldownSecondsLeft > 0;
@@ -243,19 +268,118 @@ function QuestionView({
   );
 }
 
-// --- Result (pass / fail / timeout / violation — same copy for the latter three) --
+// --- Course rating (shown after a pass) --------------------------------------
 
-function ResultView({
-  phase,
-  onContinue,
+function CourseRating({ slug, initial }: { slug: string; initial: number | null }) {
+  const { t } = useT();
+  const mutation = useRateCourseMutation();
+  const [rating, setRating] = useState<number | null>(initial);
+
+  const rate = (value: number) => {
+    setRating(value);
+    selectionHaptic();
+    // Best-effort — endpoint may 404 before the backend ships; swallow.
+    mutation.mutate({ slug, rating: value }, { onError: () => undefined });
+  };
+
+  return (
+    <div className="w-full">
+      <p className="text-sm font-medium text-text">{t.quiz.rateHeading}</p>
+      <p className="mt-0.5 text-xs text-text-muted">
+        {rating !== null ? t.quiz.rateThanks : t.quiz.rateHint}
+      </p>
+      <div className="mt-3 flex justify-center gap-1.5">
+        {[1, 2, 3, 4, 5].map((n) => {
+          const filled = rating !== null && n <= rating;
+          return (
+            <button
+              key={n}
+              type="button"
+              aria-label={format(t.quiz.rateStar, { n })}
+              aria-pressed={filled}
+              onClick={() => rate(n)}
+              className="flex h-11 w-11 items-center justify-center rounded-full transition-colors duration-150 hover:bg-surface-2"
+            >
+              <Star
+                className={cn(
+                  "h-7 w-7",
+                  filled ? "fill-accent text-accent" : "text-text-faint",
+                )}
+              />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// --- Result: PASS (rating + mint) --------------------------------------------
+
+function PassView({
+  score,
+  course,
+  wallet,
+  onGoToProfile,
+  onBack,
+}: {
+  score: number;
+  course: CourseDetail;
+  wallet: Wallet | null | undefined;
+  onGoToProfile: () => void;
+  onBack: () => void;
+}) {
+  const { t } = useT();
+  return (
+    <div className="flex flex-col items-center gap-6 py-8 text-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-success-soft">
+          <Award className="h-10 w-10 text-success" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold">{t.quiz.passedTitle}</h2>
+          <p className="mt-1 text-text-muted">{format(t.quiz.score, { score })}</p>
+        </div>
+      </div>
+
+      <CourseRating slug={course.slug} initial={course.myRating ?? null} />
+
+      <div className="w-full">
+        <p className="mb-2 text-sm font-medium text-text">{t.quiz.mintHeading}</p>
+        <MintFlow
+          course={course}
+          wallet={wallet}
+          onGoToProfile={onGoToProfile}
+          ctaLabel={t.mint.mintCta}
+        />
+      </div>
+
+      <button
+        type="button"
+        onClick={onBack}
+        className="text-sm font-medium text-text-muted underline underline-offset-2 hover:text-text"
+      >
+        {t.quiz.backToCourse}
+      </button>
+    </div>
+  );
+}
+
+// --- Result: FAIL (distinct rule-ended vs low-score copy) --------------------
+
+function FailView({
+  score,
+  reason,
+  retryAfterSeconds,
   onRetry,
 }: {
-  phase: Extract<Phase, { name: "result" }>;
-  onContinue: () => void;
+  score: number;
+  reason: string | undefined;
+  retryAfterSeconds: number | null;
   onRetry: () => void;
 }) {
   const { t } = useT();
-  const { passed, score, retryAfterSeconds } = phase;
+  const ruleEnded = isRuleEndedReason(reason);
 
   const retryTargetMs = useMemo(
     () => (retryAfterSeconds != null ? Date.now() + retryAfterSeconds * 1000 : null),
@@ -267,29 +391,18 @@ function ResultView({
 
   return (
     <div className="flex flex-col items-center gap-4 py-12 text-center">
-      <div
-        className={cn(
-          "flex h-20 w-20 items-center justify-center rounded-full",
-          passed ? "bg-success-soft" : "bg-surface-2",
-        )}
-      >
-        {passed ? (
-          <Award className="h-10 w-10 text-success" />
-        ) : (
-          <XCircle className="h-10 w-10 text-danger" />
-        )}
+      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-surface-2">
+        <XCircle className="h-10 w-10 text-danger" />
       </div>
-      <h2 className="text-2xl font-bold">{passed ? t.quiz.passedTitle : t.quiz.failedTitle}</h2>
+      <h2 className="text-2xl font-bold">
+        {ruleEnded ? t.quiz.failedRuleTitle : t.quiz.failedTitle}
+      </h2>
       <p className="text-text-muted">{format(t.quiz.score, { score })}</p>
+      <p className="max-w-sm text-sm text-text-muted">
+        {ruleEnded ? t.quiz.failedRuleBody : t.quiz.failedBody}
+      </p>
 
-      {/* Same copy whether this was a real fail, a timeout, or a violation. */}
-      {!passed && <p className="max-w-sm text-sm text-text-muted">{t.quiz.failedBody}</p>}
-
-      {passed ? (
-        <Button variant="primary" size="lg" fullWidth onClick={onContinue}>
-          {t.quiz.continue}
-        </Button>
-      ) : stillCoolingDown ? (
+      {stillCoolingDown ? (
         <p className="text-sm font-medium text-text-muted">
           {format(t.quiz.retryCountdown, { duration: formatDuration(retrySecondsLeft) })}
         </p>
@@ -314,7 +427,9 @@ export function QuizScreen({
 }) {
   const { t } = useT();
   const goBack = useAppStore((s) => s.goBack);
+  const setTab = useAppStore((s) => s.setTab);
   const { data: course, isPending, isError, refetch } = useCourseQuery(courseSlug);
+  const { data: me } = useMe();
 
   const startMutation = useStartQuizMutation();
   const answerMutation = useAnswerQuizMutation();
@@ -345,6 +460,7 @@ export function QuizScreen({
               passed: false,
               score: data.score,
               retryAfterSeconds: data.retryAfterSeconds,
+              reason: data.reason ?? "backgrounded",
             });
           },
           onError: () => {
@@ -352,7 +468,13 @@ export function QuizScreen({
             // attempt out on its own; reflect the same outcome locally so
             // the user isn't stuck.
             notificationHaptic("error");
-            setPhase({ name: "result", passed: false, score: 0, retryAfterSeconds: 3600 });
+            setPhase({
+              name: "result",
+              passed: false,
+              score: 0,
+              retryAfterSeconds: 3600,
+              reason: "backgrounded",
+            });
           },
         },
       );
@@ -427,6 +549,7 @@ export function QuizScreen({
               passed: data.passed,
               score: data.score,
               retryAfterSeconds: data.retryAfterSeconds,
+              reason: data.passed ? undefined : data.reason,
             });
           } else {
             impactHaptic("light");
@@ -458,13 +581,23 @@ export function QuizScreen({
           pending={answerMutation.isPending}
         />
       )}
-      {phase.name === "result" && (
-        <ResultView
-          phase={phase}
-          onContinue={goBack}
-          onRetry={() => setPhase({ name: "rules" })}
-        />
-      )}
+      {phase.name === "result" &&
+        (phase.passed ? (
+          <PassView
+            score={phase.score}
+            course={course}
+            wallet={me?.wallet}
+            onGoToProfile={() => setTab("profile")}
+            onBack={goBack}
+          />
+        ) : (
+          <FailView
+            score={phase.score}
+            reason={phase.reason}
+            retryAfterSeconds={phase.retryAfterSeconds}
+            onRetry={() => setPhase({ name: "rules" })}
+          />
+        ))}
     </Screen>
   );
 }

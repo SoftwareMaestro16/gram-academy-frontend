@@ -7,6 +7,7 @@ import type { ThemeOverride } from "../lib/theme";
  *  and the Telegram BackButton pops `history` (frontend-spec §3). */
 export type AppView =
   | { name: "home" }
+  | { name: "learning" }
   | { name: "section"; sectionSlug: string }
   | { name: "course"; slug: string }
   | { name: "lesson"; courseSlug: string; lessonId: string }
@@ -14,8 +15,9 @@ export type AppView =
   | { name: "certificates" }
   | { name: "profile" };
 
-/** Root tabs shown in the bottom tab bar. */
-export type RootTab = "home" | "certificates" | "profile";
+/** Root tabs shown in the bottom tab bar. Home is the marketing landing; the
+ *  Learning tab holds the section/course catalog that Home used to host. */
+export type RootTab = "home" | "learning" | "certificates" | "profile";
 
 interface AppState {
   view: AppView;
@@ -54,9 +56,11 @@ export const useAppStore = create<AppState>()(
           view:
             tab === "home"
               ? { name: "home" }
-              : tab === "certificates"
-                ? { name: "certificates" }
-                : { name: "profile" },
+              : tab === "learning"
+                ? { name: "learning" }
+                : tab === "certificates"
+                  ? { name: "certificates" }
+                  : { name: "profile" },
           history: [],
         })),
       goBack: () => {
