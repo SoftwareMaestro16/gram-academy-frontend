@@ -34,11 +34,15 @@ export function Screen({
 }: ScreenProps) {
   const { c } = useT();
   return (
+    // Header is `fixed` (out of flow), so every screen has to reserve its
+    // height itself — style, not a Tailwind class, since --header-h is a
+    // runtime-measured value (Header.tsx).
     <div
       className={cn(
         "flex min-h-full w-full flex-col",
         wide ? "content-col-lesson" : "content-col",
       )}
+      style={{ paddingTop: "var(--header-h)" }}
     >
       {(title || onBack || action) && (
         // Sticks right below the persistent site Header via `--header-h`

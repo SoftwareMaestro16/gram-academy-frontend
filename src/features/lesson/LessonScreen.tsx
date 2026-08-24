@@ -482,7 +482,17 @@ export function LessonScreen({
         {/* ≥960px: persistent sticky rail with the course TOC and, below it, the
            in-lesson "On this page" nav. Below md the two become collapsibles in
            the content column instead. */}
-        <aside className="hidden md:block md:sticky md:top-28 md:max-h-[calc(100vh-8rem)] md:self-start md:overflow-y-auto">
+        {/* top/max-h derived from --header-h (Header's real measured height)
+           plus the sub-header's fixed 56px (h-14) — not a hardcoded guess, so
+           it can't drift out of sync the way the old top-28 (112px) did the
+           moment Header's own height changed. */}
+        <aside
+          className="hidden md:sticky md:block md:self-start md:overflow-y-auto"
+          style={{
+            top: "calc(var(--header-h) + 56px)",
+            maxHeight: "calc(100dvh - var(--header-h) - 56px)",
+          }}
+        >
           {contentsHeading}
           <RoadmapList
             lessons={course.lessons}

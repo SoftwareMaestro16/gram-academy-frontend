@@ -35,7 +35,13 @@ export function Header() {
   }, []);
 
   return (
-    <header ref={ref} className="sticky top-0 z-30">
+    // `fixed`, not `sticky` — a sticky Header was observed lagging a frame or
+    // two behind during fast/momentum scroll in a Telegram Desktop WebView,
+    // opening a gap that showed already-scrolled content above it for an
+    // instant. Fixed positioning pins it to the viewport unconditionally,
+    // sidestepping that class of bug entirely; Screen's sub-header (still
+    // `sticky`) stacks below it via the same measured --header-h.
+    <header ref={ref} className="fixed inset-x-0 top-0 z-30">
       {/* content-col-width outer carries the safe-area padding AND the background/rounding, so the
        *  notch-safe inset and the header row below it are the same narrow shape (not a full-width
        *  strip sitting above a narrower pill). The row's own height is fixed on the INNER div, not
