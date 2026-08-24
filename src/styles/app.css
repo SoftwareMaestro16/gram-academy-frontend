@@ -99,6 +99,12 @@
 html,
 body {
   height: 100%;
+  /* Stops the elastic rubber-band bounce past the top/bottom of the page —
+     without this, overscrolling in some Telegram WebViews (observed on
+     Desktop) briefly scrolls the whole layout past its bounds, and whatever
+     was scrolled underneath the sticky Header shows through above it for
+     that instant instead of solid background. */
+  overscroll-behavior-y: none;
 }
 
 body {

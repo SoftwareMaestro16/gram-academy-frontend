@@ -68,15 +68,19 @@ function Row({
           )}
         />
       )}
-      <span
-        className={cn(
-          "flex-1 truncate text-sm",
-          current ? "font-medium text-text" : "text-text",
-        )}
-      >
-        {title}
+      {/* min-w-0 so the inner truncate can actually shrink; trailing sits
+         right next to the title (not pushed to the row's far edge). */}
+      <span className="flex min-w-0 flex-1 items-center gap-2">
+        <span
+          className={cn(
+            "min-w-0 truncate text-sm",
+            current ? "font-medium text-text" : "text-text",
+          )}
+        >
+          {title}
+        </span>
+        {trailing}
       </span>
-      {trailing}
     </button>
   );
 }

@@ -128,15 +128,19 @@ function AppShell() {
 }
 
 /** Runs initData auth once, then renders the app (or loading/error). */
-function AuthGate({ initData }: { initData: string }) {
+function AuthGate() {
   const auth = useAuthTelegramMutation();
   const setLocale = useAppStore((s) => s.setLocale);
   const setView = useAppStore((s) => s.setView);
   const started = useRef(false);
   const didNavigate = useRef(false);
 
+  // Re-reads initData fresh on every call (initial mount AND retry) instead of
+  // closing over one snapshot — some Telegram clients don't re-mint
+  // `auth_date` on an in-app reload, so a failed (expired) attempt retried
+  // with the exact same string was guaranteed to fail again forever.
   const authenticate = () => {
-    auth.mutate(initData, {
+    auth.mutate(getTelegramInitData(), {
       onSuccess: (me) => {
         setLocale(me.user.locale);
         if (me.deepLinkCourseSlug && !didNavigate.current) {
@@ -193,5 +197,5 @@ export function App() {
 
   const initData = useMemo(() => getTelegramInitData(), []);
   if (!initData) return <OutsideTelegram />;
-  return <AuthGate initData={initData} />;
+  return <AuthGate />;
 }

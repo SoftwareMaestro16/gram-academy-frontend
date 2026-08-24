@@ -25,6 +25,7 @@
     "buffer": "^6.0.3",
     "clsx": "^2.1.1",
     "lucide-react": "^1.33.0",
+    "mermaid": "^11.17.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-markdown": "^10.0.0",

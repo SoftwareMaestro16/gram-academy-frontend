@@ -351,37 +351,24 @@ export function LessonScreen({
 
   const nextPending = completeMutation.isPending || justCompleted;
 
+  // Sticky within the aside's own scroll box (not just the aside's position on
+  // the page) — otherwise, once the roadmap + "On this page" list together
+  // taller than the box, scrolling it internally carries this label away with
+  // the rest instead of staying pinned at the top the way a section heading
+  // should. The solid background matters here too: without it, list items
+  // scrolling underneath would show through.
   const contentsHeading = (
-    <p className="mb-2 px-3 text-[13px] font-semibold uppercase tracking-wide text-text-muted">
+    <p className="sticky top-0 z-10 mb-2 bg-bg px-3 pb-2 pt-1 text-[13px] font-semibold uppercase tracking-wide text-text-muted">
       {t.lesson.contents}
     </p>
   );
 
   return (
     <Screen onBack={goBack} wide>
-      <div className="md:grid md:grid-cols-[240px_1fr] md:gap-8 lg:grid-cols-[280px_1fr] lg:gap-10">
-        {/* ≥960px: persistent sticky rail with the course TOC and, below it, the
-           in-lesson "On this page" nav. Below md the two become collapsibles in
-           the content column instead. */}
-        <aside className="hidden md:block md:sticky md:top-28 md:max-h-[calc(100vh-8rem)] md:self-start md:overflow-y-auto">
-          {contentsHeading}
-          <RoadmapList
-            lessons={course.lessons}
-            quizzes={course.quizzes}
-            currentLessonId={lesson.id}
-            onSelectLesson={goToLesson}
-            onSelectQuiz={goToQuiz}
-          />
-          {hasSectionNav && (
-            <>
-              <p className="mb-2 mt-6 px-3 text-[13px] font-semibold uppercase tracking-wide text-text-muted">
-                {t.lesson.onThisPage}
-              </p>
-              <OnThisPage sections={headings} activeId={activeSectionId} onJump={scrollToSection} />
-            </>
-          )}
-        </aside>
-
+      {/* Content column first, sidebar second — both in the DOM (grid track
+         order follows DOM order, so this — not a CSS `order` override on the
+         aside — is what actually puts the sidebar on the right) and visually. */}
+      <div className="md:grid md:grid-cols-[1fr_240px] md:gap-8 lg:grid-cols-[1fr_280px] lg:gap-10">
         <div className="min-w-0">
           <p className="text-[13px] font-medium uppercase tracking-wide text-text-muted">
             {format(t.lesson.eyebrow, {
@@ -478,6 +465,28 @@ export function LessonScreen({
             </nav>
           </footer>
         </div>
+
+        {/* ≥960px: persistent sticky rail with the course TOC and, below it, the
+           in-lesson "On this page" nav. Below md the two become collapsibles in
+           the content column instead. */}
+        <aside className="hidden md:block md:sticky md:top-28 md:max-h-[calc(100vh-8rem)] md:self-start md:overflow-y-auto">
+          {contentsHeading}
+          <RoadmapList
+            lessons={course.lessons}
+            quizzes={course.quizzes}
+            currentLessonId={lesson.id}
+            onSelectLesson={goToLesson}
+            onSelectQuiz={goToQuiz}
+          />
+          {hasSectionNav && (
+            <>
+              <p className="mb-2 mt-6 px-3 text-[13px] font-semibold uppercase tracking-wide text-text-muted">
+                {t.lesson.onThisPage}
+              </p>
+              <OnThisPage sections={headings} activeId={activeSectionId} onJump={scrollToSection} />
+            </>
+          )}
+        </aside>
       </div>
     </Screen>
   );
