@@ -482,16 +482,12 @@ export function LessonScreen({
         {/* ≥960px: persistent sticky rail with the course TOC and, below it, the
            in-lesson "On this page" nav. Below md the two become collapsibles in
            the content column instead. */}
-        {/* top/max-h derived from --header-h (Header's real measured height)
-           plus the sub-header's fixed 56px (h-14) — not a hardcoded guess, so
-           it can't drift out of sync the way the old top-28 (112px) did the
-           moment Header's own height changed. */}
+        {/* Sticks below the sub-header within #scroll-area (App.tsx) — Header
+           itself lives outside that scrolling subtree, so this only clears
+           the sub-header's own fixed 56px (h-14), not Header's height too. */}
         <aside
           className="hidden md:sticky md:block md:self-start md:overflow-y-auto"
-          style={{
-            top: "calc(var(--header-h) + 56px)",
-            maxHeight: "calc(100dvh - var(--header-h) - 56px)",
-          }}
+          style={{ top: "56px", maxHeight: "calc(100dvh - 56px)" }}
         >
           {contentsHeading}
           <RoadmapList

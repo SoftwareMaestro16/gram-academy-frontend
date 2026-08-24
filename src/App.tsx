@@ -109,17 +109,26 @@ function AppShell() {
   const hideBottomTabBar = view.name === "lesson" || view.name === "quiz";
 
   return (
-    // min-h-dvh (not min-h-full): a percentage-height chain up through
-    // html/body/#root is fragile inside Telegram's WebView host (observed
-    // not resolving there, leaving the Footer floating right under short
-    // content instead of pinned to the viewport bottom) — dvh sidesteps
-    // that chain entirely.
-    <div className="flex min-h-dvh flex-col">
-      {/* Header is `sticky`, so it needs to be first in DOM/flow order to pin
-       *  correctly as the page scrolls. */}
+    // h-dvh + overflow-hidden: this outer column is NOT itself scrollable —
+    // Header and TabBar live here, in normal flow, never inside a scrolling
+    // container (see the #root comment in app.css for why that matters).
+    // #scroll-area below is the one part of this that actually scrolls.
+    <div className="flex h-dvh flex-col overflow-hidden">
       <Header />
-      <div className="flex flex-1 flex-col">{renderView(view)}</div>
-      <Footer withTabBar={!hideBottomTabBar} />
+      <div id="scroll-area" className="flex-1">
+        {/* min-h-full (not min-h-dvh): #scroll-area's own height is set by
+           flexbox (flex-1 in a height:100dvh parent) — a definite, reliably
+           computed value, not the multi-level %-through-document-flow chain
+           that was fragile in Telegram's WebView host before (html/body/#root
+           not resolving). A single min-height:100% against ONE flex-sized
+           ancestor pins Footer to the viewport bottom on short pages exactly
+           (verified with a scratch repro), unlike min-h-dvh here, which
+           overshoots #scroll-area's real height by Header's own height. */}
+        <div className="flex min-h-full flex-col">
+          <div className="flex flex-1 flex-col">{renderView(view)}</div>
+          <Footer withTabBar={!hideBottomTabBar} />
+        </div>
+      </div>
       {/* TabBar's bottom bar is `fixed`, so its DOM position is independent
        *  of the flow above — safe to render last. */}
       {!hideBottomTabBar && <TabBar />}

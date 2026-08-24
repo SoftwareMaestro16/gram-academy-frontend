@@ -1,4 +1,3 @@
-import { useLayoutEffect, useRef } from "react";
 import { Logo } from "./Logo";
 import { WalletControl } from "./WalletControl";
 
@@ -12,36 +11,17 @@ import { WalletControl } from "./WalletControl";
  *
  * The theme toggle that used to live here was removed — it's still reachable
  * from Profile's language/theme card, so nothing is lost.
+ *
+ * Plain normal-flow element, no position/z-index trickery needed: AppShell
+ * (App.tsx) renders Header outside the scrolling #scroll-area entirely, in a
+ * non-scrolling chrome layer, so it never moves regardless of scroll — see
+ * the #root comment in app.css for why that structure exists (a fixed/sticky
+ * Header nested inside a scrolling ancestor wasn't staying pinned to the true
+ * viewport in a Telegram Desktop WebView).
  */
 export function Header() {
-  const ref = useRef<HTMLElement>(null);
-
-  // Publishes the real rendered height as `--header-h` so any sticky bar that
-  // needs to sit right below Header (Screen's back-button row) can position
-  // itself off the actual box instead of a hardcoded guess — a guess that's
-  // wrong whenever the safe-area inset, text wrapping, or the sm:mt-3
-  // floating-card margin changes Header's true height, leaving either a gap
-  // (content peeking through) or an overlap.
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const publish = () => {
-      document.documentElement.style.setProperty("--header-h", `${el.offsetHeight}px`);
-    };
-    publish();
-    const observer = new ResizeObserver(publish);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    // `fixed`, not `sticky` — a sticky Header was observed lagging a frame or
-    // two behind during fast/momentum scroll in a Telegram Desktop WebView,
-    // opening a gap that showed already-scrolled content above it for an
-    // instant. Fixed positioning pins it to the viewport unconditionally,
-    // sidestepping that class of bug entirely; Screen's sub-header (still
-    // `sticky`) stacks below it via the same measured --header-h.
-    <header ref={ref} className="fixed inset-x-0 top-0 z-30">
+    <header className="relative z-30">
       {/* content-col-width outer carries the safe-area padding AND the background/rounding, so the
        *  notch-safe inset and the header row below it are the same narrow shape (not a full-width
        *  strip sitting above a narrower pill). The row's own height is fixed on the INNER div, not

@@ -34,24 +34,17 @@ export function Screen({
 }: ScreenProps) {
   const { c } = useT();
   return (
-    // Header is `fixed` (out of flow), so every screen has to reserve its
-    // height itself — style, not a Tailwind class, since --header-h is a
-    // runtime-measured value (Header.tsx).
     <div
       className={cn(
         "flex min-h-full w-full flex-col",
         wide ? "content-col-lesson" : "content-col",
       )}
-      style={{ paddingTop: "var(--header-h)" }}
     >
       {(title || onBack || action) && (
-        // Sticks right below the persistent site Header via `--header-h`
-        // (Header.tsx measures itself and publishes the real height), so this
-        // can never drift out of sync with Header's actual box.
-        <header
-          className="sticky z-10 border-b border-border bg-bg/90 backdrop-blur"
-          style={{ top: "var(--header-h)" }}
-        >
+        // Sticks to the top of #scroll-area (App.tsx) — Header itself lives
+        // outside that scrolling subtree entirely, so this only ever needs
+        // to clear its OWN height, not Header's.
+        <header className="sticky top-0 z-10 border-b border-border bg-bg/90 backdrop-blur">
           <div className="flex h-14 items-center gap-2 px-3 xs:px-4">
             {onBack && (
               <button

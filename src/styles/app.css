@@ -117,12 +117,25 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* The app's one true scroll container (see html/body above). `position:
-   sticky` elements inside stick relative to this instead of the window —
-   functionally the same, `window.scrollY`/`scrollTo`/the `scroll` event just
-   have to target this element instead (see lib/scroll.ts). */
+/* Sized to the viewport but NOT itself scrollable — AppShell (App.tsx) splits
+   into a non-scrolling Header/TabBar "chrome" layer and a #scroll-area
+   middle layer that actually scrolls, specifically so Header/TabBar are
+   never descendants of a scrolling container. A `position: fixed` Header
+   nested inside an `overflow: auto` ancestor was observed NOT staying
+   pinned to the true viewport in a Telegram Desktop WebView (a known class
+   of bug in some embedded Chromium builds) — scrolled content showed above
+   it. Keeping Header outside the scrolling subtree entirely sidesteps that
+   bug by construction, rather than depending on fixed/sticky positioning
+   quirks in this specific engine. */
 #root {
   height: 100dvh;
+  overflow: hidden;
+}
+
+/* The app's one real scroll container — see App.tsx's AppShell and the
+   comment on #root above. `position: sticky` elements inside it (Screen's
+   sub-header, the lesson sidebar) stick relative to THIS. */
+#scroll-area {
   overflow-y: auto;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
@@ -163,16 +176,6 @@ body {
 }
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-/* Real measured height of the persistent site Header (Header.tsx sets this via
-   ResizeObserver). Screen's own sticky sub-header sticks right below it via
-   `top: var(--header-h)` — driven by the actual box, not a hardcoded guess, so
-   it can never drift out of sync with Header's true height (safe-area inset,
-   text wrapping, the sm:mt-3 floating-card margin, etc. all included). The
-   fallback below only matters for the one frame before JS measures it. */
-:root {
-  --header-h: 56px;
 }
 
 /* Centered content column that grows by breakpoint instead of stretching
