@@ -1,18 +1,18 @@
-import { Award } from "lucide-react";
 import { Screen } from "../../components/Screen";
 import { CourseCard } from "../../components/CourseCard";
-import { SectionImage } from "../../components/SectionImage";
+import { SectionHero } from "../../components/SectionHero";
+import { CertGroupProgress } from "../../components/CertGroupProgress";
 import { EmptyState, ErrorCard, SkeletonList } from "../../components/StateViews";
 import { useT } from "../../i18n/useT";
-import { format } from "../../i18n/strings";
+import { themeForSection } from "../../lib/sectionTheme";
 import { useSectionsQuery } from "../../api/queries";
 import { useAppStore } from "../../state/useAppStore";
 
 /**
  * Section detail. There is no per-section endpoint (§13.5) — the section and
  * its courses come from the already-cached GET /v1/sections response (same
- * query key as the Learning catalog). Shows a hero (image + description + the
- * section's certificate-condition line) above a grid of course cards.
+ * query key as the Learning catalog). Shows a themed hero + the section's
+ * certificate progress above a grid of course cards.
  */
 export function SectionScreen({ sectionSlug }: { sectionSlug: string }) {
   const { t } = useT();
@@ -21,29 +21,14 @@ export function SectionScreen({ sectionSlug }: { sectionSlug: string }) {
   const { data, isPending, isError, refetch } = useSectionsQuery();
 
   const section = data?.find((s) => s.slug === sectionSlug);
+  const theme = section ? themeForSection(section.slug, section.sortOrder) : undefined;
 
   return (
     <Screen title={section?.title} onBack={goBack} withTabBar>
       {section && (
-        <div className="mb-4 xs:mb-6">
-          <SectionImage
-            slug={section.slug}
-            className="h-32 xs:h-44"
-          />
-          {section.description && (
-            <p className="mt-3 text-sm text-text-muted xs:text-base">
-              {section.description}
-            </p>
-          )}
-          {/* Section-level certificate grouping isn't exposed by the API yet
-           *  (§13.5 only carries per-course `certificate` + price); this is an
-           *  informational line built from the fields we do have. */}
-          <div className="mt-3 flex items-start gap-2 rounded-xl border border-border bg-surface-2 p-3 text-sm text-text-muted">
-            <Award className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-            <span>
-              {format(t.learning.sectionCertHint, { section: section.title })}
-            </span>
-          </div>
+        <div className="mb-4 flex flex-col gap-3 xs:mb-6">
+          <SectionHero section={section} />
+          <CertGroupProgress section={section} />
         </div>
       )}
 
@@ -55,10 +40,13 @@ export function SectionScreen({ sectionSlug }: { sectionSlug: string }) {
         <EmptyState title={t.section.empty} />
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {section.courses.map((course) => (
+          {section.courses.map((course, i) => (
             <CourseCard
               key={course.slug}
               course={course}
+              index={i + 1}
+              sectionSlug={section.slug}
+              theme={theme}
               onClick={() => setView({ name: "course", slug: course.slug })}
             />
           ))}

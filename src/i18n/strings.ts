@@ -47,11 +47,11 @@ export interface ScreenMessages {
       { title: string; body: string },
       { title: string; body: string },
     ];
-    /** Curriculum-breadth section: the 10 real section titles as a chip cloud. */
+    /** Curriculum-breadth section: the 11 real section titles as a chip cloud. */
     curriculumTitle: string;
     curriculumBody: string;
     curriculumTopics: [
-      string, string, string, string, string,
+      string, string, string, string, string, string,
       string, string, string, string, string,
     ];
     /** Three-language accessibility section. */
@@ -65,6 +65,19 @@ export interface ScreenMessages {
     subtitle: string;
     empty: string;
     courses: string;
+    /** Course-card / section-card chrome. */
+    locked: string;
+    open: string;
+    courseIndex: string;
+    level: { beginner: string; intermediate: string; advanced: string; expert: string };
+    freeCourses: string;
+    completedCourses: string;
+    catalogSummary: string;
+    /** Certificate-progress block on the section screen. */
+    certUnlocked: string;
+    certMintSoon: string;
+    certProgress: string;
+    certRequires: string;
     hoursMeta: string;
     minutesMeta: string;
     sectionCertHint: string;
@@ -297,6 +310,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
         "Advanced Contracts & Token Standards",
         "Architecture Deep Dive",
         "Protocol Engineering",
+        "Production Engineering",
       ],
       languagesTitle: "Read it in your language",
       languagesBody:
@@ -308,6 +322,17 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       subtitle: "Browse the catalog by section.",
       empty: "No courses yet.",
       courses: "{n} courses",
+      locked: "Paid",
+      open: "Open",
+      courseIndex: "Course {n}",
+      level: { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced", expert: "Expert" },
+      freeCourses: "{n} free",
+      completedCourses: "{done}/{total} completed",
+      catalogSummary: "{sections} sections · {courses} courses, from beginner to architect.",
+      certUnlocked: "Certificate unlocked — mint it from any completed course.",
+      certMintSoon: "Certificate unlocked — on-chain minting opens soon.",
+      certProgress: "{done}/{need} courses completed",
+      certRequires: "Any {n} of {total}:",
       hoursMeta: "{n} hr",
       minutesMeta: "{n} min",
       sectionCertHint:
@@ -538,6 +563,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
         "Продвинутые контракты и стандарты токенов",
         "Глубокое погружение в архитектуру",
         "Инженерия протокола",
+        "Продакшн-инженерия",
       ],
       languagesTitle: "Читайте на своём языке",
       languagesBody:
@@ -549,6 +575,17 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       subtitle: "Каталог курсов по разделам.",
       empty: "Пока нет курсов.",
       courses: "{n} курсов",
+      locked: "Платный",
+      open: "Открыть",
+      courseIndex: "Курс {n}",
+      level: { beginner: "Новичок", intermediate: "Средний", advanced: "Продвинутый", expert: "Эксперт" },
+      freeCourses: "{n} бесплатно",
+      completedCourses: "Пройдено {done}/{total}",
+      catalogSummary: "{sections} разделов · {courses} курсов — от новичка до архитектора.",
+      certUnlocked: "Сертификат открыт — заминтите его из любого пройденного курса.",
+      certMintSoon: "Сертификат открыт — минт в сети скоро станет доступен.",
+      certProgress: "Пройдено курсов: {done}/{need}",
+      certRequires: "Любые {n} из {total}:",
       hoursMeta: "{n} ч",
       minutesMeta: "{n} мин",
       sectionCertHint:
@@ -780,6 +817,7 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
         "高级合约与代币标准",
         "架构深度解析",
         "协议工程",
+        "生产级工程",
       ],
       languagesTitle: "用你的语言阅读",
       languagesBody:
@@ -791,6 +829,17 @@ export const screenMessages: Record<Locale, ScreenMessages> = {
       subtitle: "按板块浏览课程目录。",
       empty: "暂无课程。",
       courses: "{n} 门课程",
+      locked: "付费",
+      open: "打开",
+      courseIndex: "第 {n} 门",
+      level: { beginner: "入门", intermediate: "中级", advanced: "高级", expert: "专家" },
+      freeCourses: "{n} 门免费",
+      completedCourses: "已完成 {done}/{total}",
+      catalogSummary: "{sections} 个板块 · {courses} 门课程，从新手到架构师。",
+      certUnlocked: "证书已解锁——可从任意已完成的课程铸造。",
+      certMintSoon: "证书已解锁——链上铸造即将开放。",
+      certProgress: "已完成课程 {done}/{need}",
+      certRequires: "{total} 门中任意 {n} 门：",
       hoursMeta: "{n} 小时",
       minutesMeta: "{n} 分钟",
       sectionCertHint: "完成本板块的免费课程即可获得「{section}」证书。",

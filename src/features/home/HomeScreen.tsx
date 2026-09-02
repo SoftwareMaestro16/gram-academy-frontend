@@ -130,7 +130,7 @@ function HowItWorks({
   );
 }
 
-/** Curriculum breadth — the 10 real section titles as a chip cloud, so a
+/** Curriculum breadth — the 11 real section titles as a chip cloud, so a
  *  reader can see the platform's actual scope at a glance. */
 function Curriculum({
   title,

@@ -110,6 +110,10 @@ export const certGroupSchema = z.object({
   minCoursesRequired: z.number(),
   requiredCourseSlugs: z.array(z.string()),
   completedCourses: z.number(),
+  // Additive, optional: whether the group's section has a deployed
+  // AcademyCollection wired up (Section.collectionAddress) — i.e. whether
+  // "mint" can succeed right now. Absent = assume available.
+  mintAvailable: z.boolean().optional(),
 });
 export type CertGroup = z.infer<typeof certGroupSchema>;
 
